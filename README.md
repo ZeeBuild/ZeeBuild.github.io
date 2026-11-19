@@ -1,4 +1,4 @@
-# OC-Site
+# Zee Site
 
 A lightweight static site — plain HTML, CSS and JS. No build step, no dependencies.
 
@@ -23,4 +23,4 @@ Works as-is on GitHub Pages, Netlify, Cloudflare Pages, or any static host.
 
 ## Repo
 
-https://github.com/ZeeBuild/OC-Site
+https://github.com/ZeeBuild/ZeeBuild.github.io
