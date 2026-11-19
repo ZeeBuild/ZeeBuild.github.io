@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A timed addition and subtraction game with an on-screen numpad and high scores." />
+  <title>Math — Zee Site</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #4c8dff;
+      --border: #30363d;
+      --good: #3fb950;
+      --bad: #f85149;
+      --radius: 12px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.9rem;
+      padding: 1.5rem;
+    }
+
+    .brand { text-decoration: none; color: var(--text); font-weight: 700; font-size: 1.1rem; }
+    .brand span { color: var(--accent); }
+    .game-nav { display: flex; gap: 1.25rem; }
+    .game-nav a { color: var(--muted); text-decoration: none; font-size: 0.95rem; }
+    .game-nav a:hover { color: var(--text); }
+
+    .hud {
+      display: flex;
+      gap: 2.5rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .hud .label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    .hud .value { font-size: 1.3rem; font-weight: 700; }
+    .hud .best-cell { text-align: center; }
+    .reset-best {
+      display: block;
+      margin: 0.3rem auto 0;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--muted);
+      border-radius: 999px;
+    }
+    .reset-best:hover:not(:disabled) { color: var(--text); border-color: var(--accent); }
+
+    .timebar { width: 100%; max-width: 420px; height: 4px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .timebar-fill { height: 100%; width: 100%; background: var(--accent); transition: width 0.2s linear; }
+
+    .setup {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .setup-label { color: var(--muted); font-size: 0.85rem; }
+    .presets { display: flex; gap: 0.4rem; }
+
+    button {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.55rem 0.9rem;
+      border-radius: var(--radius);
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover:not(:disabled) { border-color: var(--accent); }
+    button:disabled { opacity: 0.45; cursor: default; }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .preset.selected { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .primary { background: var(--accent); border-color: var(--accent); color: #fff; padding-inline: 1.6rem; }
+
+    .board-wrap { position: relative; width: 100%; max-width: 420px; }
+
+    .game {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .question {
+      text-align: center;
+      font-size: 2.4rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.03em;
+      padding: 0.4rem 0;
+    }
+
+    .answer-row { display: flex; gap: 0.6rem; }
+    .answer {
+      flex: 1;
+      min-height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 1.6rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    .answer.empty { color: var(--muted); font-weight: 400; }
+    .check { min-width: 6.5rem; }
+
+    .feedback { text-align: center; min-height: 1.3rem; font-size: 0.9rem; color: var(--muted); }
+    .feedback.good { color: var(--good); }
+    .feedback.bad { color: var(--bad); }
+
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+    .numpad button { height: 3.2rem; font-size: 1.1rem; }
+    .numpad .fn { color: var(--muted); font-size: 1rem; }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      background: color-mix(in srgb, var(--bg) 82%, transparent);
+      border-radius: var(--radius);
+      text-align: center;
+      padding: 1rem;
+    }
+    .overlay h2 { font-size: 1.6rem; }
+    .overlay p { color: var(--muted); }
+
+    .hint { color: var(--muted); font-size: 0.85rem; text-align: center; }
+  </style>
+</head>
+<body>
+  <a class="brand" href="index.html">Zee<span> Site</span> / Math</a>
+  <nav class="game-nav">
+    <a href="snake.html">Snake</a>
+    <a href="plates.html">Plates</a>
+  </nav>
+
+  <div class="hud">
+    <div><div class="label">Score</div><div class="value" id="score">0</div></div>
+    <div class="best-cell">
+      <div class="label">Best</div>
+      <div class="value" id="best">0</div>
+      <button type="button" id="resetBestBtn" class="reset-best" aria-label="Reset best score to zero">Reset best</button>
+    </div>
+    <div><div class="label">Time</div><div class="value" id="time">60</div></div>
+  </div>
+
+  <div class="timebar" id="timebar" aria-hidden="true"><div class="timebar-fill" id="timeFill"></div></div>
+
+  <div class="setup">
+    <span class="setup-label">Round length</span>
+    <div class="presets" id="presets" role="group" aria-label="Round length">
+      <button type="button" class="preset selected" data-seconds="60" aria-pressed="true">1 min</button>
+      <button type="button" class="preset" data-seconds="120" aria-pressed="false">2 min</button>
+      <button type="button" class="preset" data-seconds="300" aria-pressed="false">5 min</button>
+      <button type="button" class="preset" data-seconds="0" aria-pressed="false">No timer</button>
+    </div>
+    <button type="button" id="startBtn" class="primary">Start</button>
+  </div>
+
+  <div class="board-wrap">
+    <section class="game" id="game" aria-label="Math game">
+      <div class="question" id="question" aria-live="polite">&#8212; + &#8212; = ?</div>
+
+      <div class="answer-row">
+        <div class="answer empty" id="answer" aria-label="Your answer">&#8212;</div>
+        <button type="button" id="checkBtn" class="check">Check &#8629;</button>
+      </div>
+
+      <p class="feedback" id="feedback" aria-live="polite">Choose a round length and press Start.</p>
+
+      <div class="numpad" id="numpad">
+        <button type="button" data-key="1" aria-label="Digit 1">1</button>
+        <button type="button" data-key="2" aria-label="Digit 2">2</button>
+        <button type="button" data-key="3" aria-label="Digit 3">3</button>
+        <button type="button" data-key="4" aria-label="Digit 4">4</button>
+        <button type="button" data-key="5" aria-label="Digit 5">5</button>
+        <button type="button" data-key="6" aria-label="Digit 6">6</button>
+        <button type="button" data-key="7" aria-label="Digit 7">7</button>
+        <button type="button" data-key="8" aria-label="Digit 8">8</button>
+        <button type="button" data-key="9" aria-label="Digit 9">9</button>
+        <button type="button" class="fn" data-key="clear" aria-label="Clear answer">C</button>
+        <button type="button" data-key="0" aria-label="Digit 0">0</button>
+        <button type="button" class="fn" data-key="back" aria-label="Backspace">&#9003;</button>
+      </div>
+    </section>
+
+    <div class="overlay" id="overlay" hidden>
+      <h2 id="overlayTitle">Time's up!</h2>
+      <p id="overlayText">Score: 0 &middot; Best: 0</p>
+      <button type="button" id="againBtn" class="primary">Play again</button>
+    </div>
+  </div>
+
+  <p class="hint">Numpad or keyboard digits &middot; Backspace to delete &middot; Enter to check &middot; C to clear</p>
+
+  <script>
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const timeEl = document.getElementById('time');
+    const timebarEl = document.getElementById('timebar');
+    const timeFill = document.getElementById('timeFill');
+    const presetsEl = document.getElementById('presets');
+    const startBtn = document.getElementById('startBtn');
+    const resetBestBtn = document.getElementById('resetBestBtn');
+    const questionEl = document.getElementById('question');
+    const answerEl = document.getElementById('answer');
+    const checkBtn = document.getElementById('checkBtn');
+    const feedbackEl = document.getElementById('feedback');
+    const numpadEl = document.getElementById('numpad');
+    const overlay = document.getElementById('overlay');
+    const overlayTitle = document.getElementById('overlayTitle');
+    const overlayText = document.getElementById('overlayText');
+    const againBtn = document.getElementById('againBtn');
+
+    let best = 0;
+    try {
+      const stored = Number(localStorage.getItem('math-best') || 0);
+      if (Number.isFinite(stored) && stored >= 0) best = stored;
+    } catch (e) { /* storage unavailable */ }
+
+    let roundSeconds = 60;
+    let secondsLeft = 60;
+    let score = 0;
+    let running = false;
+    let answer = '';
+    let current = null;
+    let lastKey = '';
+    let deadline = 0;
+    let timerId = null;
+
+    function updateHud() {
+      scoreEl.textContent = score;
+      bestEl.textContent = best;
+      const untimed = roundSeconds === 0;
+      timeEl.textContent = untimed ? '\u221E' : secondsLeft;
+      timebarEl.hidden = untimed;
+      if (!untimed) timeFill.style.width = (secondsLeft / roundSeconds * 100) + '%';
+    }
+
+    function selectPreset(seconds) {
+      if (running) return;
+      roundSeconds = seconds;
+      secondsLeft = seconds;
+      presetsEl.querySelectorAll('.preset').forEach((b) => {
+        const on = Number(b.dataset.seconds) === seconds;
+        b.classList.toggle('selected', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+      updateHud();
+    }
+
+    function setFeedback(message, tone) {
+      feedbackEl.textContent = message;
+      feedbackEl.className = 'feedback' + (tone ? ' ' + tone : '');
+    }
+
+    function generateQuestion() {
+      let q, key, tries = 0;
+      do {
+        const op = Math.random() < 0.5 ? '+' : '\u2212';
+        let a = 10 + Math.floor(Math.random() * 90);
+        let b;
+        if (op === '+') {
+          // Keep both operands two-digit and cap the sum at 109.
+          b = 10 + Math.floor(Math.random() * (100 - a));
+        } else {
+          b = 10 + Math.floor(Math.random() * 90);
+          if (a < b) { const t = a; a = b; b = t; }
+        }
+        q = { a: a, b: b, op: op, result: op === '+' ? a + b : a - b };
+        key = a + op + b;
+        tries++;
+      } while (key === lastKey && tries < 10);
+      lastKey = key;
+      current = q;
+      questionEl.textContent = q.a + ' ' + q.op + ' ' + q.b + ' = ?';
+    }
+
+    function clearAnswer() {
+      answer = '';
+      answerEl.textContent = '\u2014';
+      answerEl.classList.add('empty');
+    }
+
+    function appendDigit(digit) {
+      if (!running || answer.length >= 3) return;
+      answer += digit;
+      answerEl.textContent = answer;
+      answerEl.classList.remove('empty');
+    }
+
+    function backspace() {
+      if (!running) return;
+      answer = answer.slice(0, -1);
+      answerEl.textContent = answer || '\u2014';
+      answerEl.classList.toggle('empty', answer === '');
+    }
+
+    function submit() {
+      if (!running || answer === '') return;
+      if (Number(answer) === current.result) {
+        score++;
+        setFeedback('Correct! +1 point', 'good');
+        updateHud();
+      } else {
+        setFeedback('Not quite — it was ' + current.result + '.', 'bad');
+      }
+      clearAnswer();
+      generateQuestion();
+    }
+
+    function start() {
+      score = 0;
+      secondsLeft = roundSeconds;
+      running = true;
+      clearAnswer();
+      generateQuestion();
+      setFeedback('Go!');
+      overlay.hidden = true;
+      presetsEl.querySelectorAll('button').forEach((b) => { b.disabled = true; });
+      startBtn.disabled = roundSeconds > 0;
+      startBtn.textContent = roundSeconds > 0 ? 'Start' : 'End round';
+      updateHud();
+      if (timerId) clearInterval(timerId);
+      timerId = null;
+      if (roundSeconds > 0) {
+        deadline = performance.now() + roundSeconds * 1000;
+        timerId = setInterval(tick, 200);
+      }
+    }
+
+    function tick() {
+      if (!running) return;
+      const left = Math.max(0, Math.ceil((deadline - performance.now()) / 1000));
+      if (left !== secondsLeft) { secondsLeft = left; updateHud(); }
+      if (left === 0) endGame();
+    }
+
+    function endGame() {
+      if (!running) return;
+      running = false;
+      if (timerId) clearInterval(timerId);
+      timerId = null;
+      secondsLeft = 0;
+      clearAnswer();
+      questionEl.textContent = '\u2014 + \u2014 = ?';
+
+      if (score > best) {
+        best = score;
+        try { localStorage.setItem('math-best', String(best)); } catch (e) { /* storage unavailable */ }
+        overlayTitle.textContent = 'New high score!';
+      } else {
+        overlayTitle.textContent = roundSeconds > 0 ? "Time's up!" : 'Round over';
+      }
+      overlayText.textContent = 'Score: ' + score + ' · Best: ' + best;
+      updateHud();
+      overlay.hidden = false;
+      presetsEl.querySelectorAll('button').forEach((b) => { b.disabled = false; });
+      startBtn.disabled = false;
+      startBtn.textContent = 'Start';
+      againBtn.focus();
+    }
+
+    presetsEl.addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-seconds]');
+      if (b) selectPreset(Number(b.dataset.seconds));
+    });
+
+    startBtn.addEventListener('click', () => {
+      if (running && roundSeconds === 0) endGame();
+      else start();
+    });
+    againBtn.addEventListener('click', start);
+    checkBtn.addEventListener('click', submit);
+
+    resetBestBtn.addEventListener('click', () => {
+      best = 0;
+      try { localStorage.setItem('math-best', '0'); } catch (e) { /* storage unavailable */ }
+      bestEl.textContent = best;
+      setFeedback('Best score reset.');
+    });
+
+    numpadEl.addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-key]');
+      if (!b) return;
+      const key = b.dataset.key;
+      if (/^\d$/.test(key)) appendDigit(key);
+      else if (key === 'back') backspace();
+      else if (key === 'clear') clearAnswer();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!running) {
+        const onButton = e.target instanceof Element && e.target.closest('button');
+        if ((e.key === 'Enter' || e.code === 'Space') && !onButton) {
+          e.preventDefault();
+          start();
+        }
+        return;
+      }
+      if (/^\d$/.test(e.key)) {
+        e.preventDefault();
+        appendDigit(e.key);
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+        backspace();
+      } else if (e.key === 'Delete' || e.key === 'Escape' || e.key.toLowerCase() === 'c') {
+        e.preventDefault();
+        clearAnswer();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        submit();
+      }
+    });
+
+    selectPreset(60);
+    bestEl.textContent = best;
+  </script>
+</body>
+</html>

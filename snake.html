@@ -32,6 +32,9 @@
 
     .brand { text-decoration: none; color: var(--text); font-weight: 700; font-size: 1.1rem; }
     .brand span { color: var(--accent); }
+    .game-nav { display: flex; gap: 1.25rem; }
+    .game-nav a { color: var(--muted); text-decoration: none; font-size: 0.95rem; }
+    .game-nav a:hover { color: var(--text); }
 
     .hud {
       display: flex;
@@ -101,6 +104,10 @@
 </head>
 <body>
   <a class="brand" href="index.html">Zee<span> Site</span> / Snake</a>
+  <nav class="game-nav">
+    <a href="plates.html">Plates</a>
+    <a href="math.html">Math</a>
+  </nav>
 
   <div class="hud">
     <div><div class="label">Score</div><div class="value" id="score">0</div></div>
