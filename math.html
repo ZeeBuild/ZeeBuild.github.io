@@ -48,16 +48,6 @@
     .hud .label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; }
     .hud .value { font-size: 1.3rem; font-weight: 700; }
     .hud .best-cell { text-align: center; }
-    .reset-best {
-      display: block;
-      margin: 0.3rem auto 0;
-      padding: 0.15rem 0.5rem;
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: var(--muted);
-      border-radius: 999px;
-    }
-    .reset-best:hover:not(:disabled) { color: var(--text); border-color: var(--accent); }
 
     .timebar { width: 100%; max-width: 420px; height: 4px; background: var(--border); border-radius: 999px; overflow: hidden; }
     .timebar-fill { height: 100%; width: 100%; background: var(--accent); transition: width 0.2s linear; }
@@ -170,7 +160,6 @@
     <div class="best-cell">
       <div class="label">Best</div>
       <div class="value" id="best">0</div>
-      <button type="button" id="resetBestBtn" class="reset-best" aria-label="Reset best score to zero">Reset best</button>
     </div>
     <div><div class="label">Time</div><div class="value" id="time">60</div></div>
   </div>
@@ -232,7 +221,6 @@
     const timeFill = document.getElementById('timeFill');
     const presetsEl = document.getElementById('presets');
     const startBtn = document.getElementById('startBtn');
-    const resetBestBtn = document.getElementById('resetBestBtn');
     const questionEl = document.getElementById('question');
     const answerEl = document.getElementById('answer');
     const checkBtn = document.getElementById('checkBtn');
@@ -403,13 +391,6 @@
     });
     againBtn.addEventListener('click', start);
     checkBtn.addEventListener('click', submit);
-
-    resetBestBtn.addEventListener('click', () => {
-      best = 0;
-      try { localStorage.setItem('math-best', '0'); } catch (e) { /* storage unavailable */ }
-      bestEl.textContent = best;
-      setFeedback('Best score reset.');
-    });
 
     numpadEl.addEventListener('click', (e) => {
       const b = e.target.closest('button[data-key]');
