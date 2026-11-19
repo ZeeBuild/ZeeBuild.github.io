@@ -1,84 +1,58 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ZeeBuild | GitHub Pages</title>
-    <meta
-      name="description"
-      content="A simple starter site for ZeeBuild, published with GitHub Pages."
-    />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <header class="site-header">
-      <div class="wrap header-inner">
-        <a class="brand" href="#top">ZeeBuild</a>
-        <nav aria-label="Main navigation">
-          <a href="#about">About</a>
-          <a href="#projects">Projects</a>
-          <a href="https://github.com/ZeeBuild" rel="noopener noreferrer">GitHub</a>
-        </nav>
-      </div>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="OC-Site — a clean, fast static site." />
+  <title>OC-Site</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="#">OC<span>‑Site</span></a>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#about">About</a>
+      <a href="snake.html">Snake</a>
+      <a href="plates.html">Plates</a>
+      <a href="https://github.com/ZeeBuild/OC-Site">GitHub</a>
+    </nav>
+  </header>
 
-    <main id="top">
-      <section class="hero">
-        <div class="wrap">
-          <p class="eyebrow">Welcome to my corner of the web</p>
-          <h1>Build something useful.</h1>
-          <p class="lead">
-            This is a simple, responsive starter site hosted with GitHub Pages.
-            Replace this copy with your own story, projects, and links.
-          </p>
-          <div class="actions">
-            <a class="button button-primary" href="#projects">See what's here</a>
-            <a
-              class="button button-secondary"
-              href="https://github.com/ZeeBuild/ZeeBuild.github.io"
-              rel="noopener noreferrer"
-              >View the repo</a
-            >
-          </div>
-        </div>
-      </section>
+  <main>
+    <section class="hero">
+      <h1>Ship a site that just works.</h1>
+      <p>OC-Site is a lightweight static site — no build step, no framework, no fuss.</p>
+      <a class="cta" href="#features">Learn more</a>
+    </section>
 
-      <section id="about" class="section">
-        <div class="wrap">
-          <h2>About this site</h2>
-          <p>
-            It lives in the <code>ZeeBuild.github.io</code> repository and is
-            published automatically at
-            <a href="https://zeebuild.github.io">zeebuild.github.io</a>.
-          </p>
-        </div>
-      </section>
+    <section id="features" class="features">
+      <article>
+        <h2>⚡ Fast</h2>
+        <p>Plain HTML, CSS and JS. Loads instantly, anywhere.</p>
+      </article>
+      <article>
+        <h2>🧩 Simple</h2>
+        <p>Three files, zero dependencies. Easy to read, easy to change.</p>
+      </article>
+      <article>
+        <h2>🚀 Ready to deploy</h2>
+        <p>Push to GitHub Pages, Netlify or Cloudflare Pages as-is.</p>
+      </article>
+    </section>
 
-      <section id="projects" class="section section-alt">
-        <div class="wrap">
-          <h2>What's here</h2>
-          <div class="grid">
-            <article class="card">
-              <h3>Projects</h3>
-              <p>Add links to things you've built, written, or shipped.</p>
-            </article>
-            <article class="card">
-              <h3>Notes</h3>
-              <p>Share tutorials, ideas, and lessons learned along the way.</p>
-            </article>
-            <article class="card">
-              <h3>About</h3>
-              <p>Tell visitors who you are and how they can reach you.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-    </main>
+    <section id="about" class="about">
+      <h2>About</h2>
+      <p>
+        OC-Site lives at
+        <a href="https://github.com/ZeeBuild/OC-Site">github.com/ZeeBuild/OC-Site</a>.
+        Clone it, tweak it, deploy it.
+      </p>
+    </section>
+  </main>
 
-    <footer class="site-footer">
-      <div class="wrap">
-        <p>&copy; 2026 ZeeBuild. Built with HTML, CSS, and GitHub Pages.</p>
-      </div>
-    </footer>
-  </body>
+  <footer class="footer">
+    <p>© 2026 OC-Site · Built with plain HTML &amp; CSS</p>
+  </footer>
+</body>
 </html>

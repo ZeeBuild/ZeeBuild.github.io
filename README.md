@@ -1,30 +1,26 @@
-# ZeeBuild.github.io
+# OC-Site
 
-A simple starter website published with [GitHub Pages](https://pages.github.com/).
+A lightweight static site — plain HTML, CSS and JS. No build step, no dependencies.
 
-Live site: <https://zeebuild.github.io>
+## Structure
 
-## What's here
+```
+index.html   — the page
+style.css    — styles
+```
 
-- `index.html` — the homepage
-- `styles.css` — responsive styling
-- `README.md` — this file
+## Run locally
 
-## Local preview
-
-Open `index.html` in a browser, or serve the folder with any static file server.
-
-## Publishing
-
-GitHub Pages publishes the `main` branch from the repository root automatically.
-Push your changes to `main` and the live site updates within a minute or two.
-
-## Customizing
-
-Edit `index.html` for content and `styles.css` for styling, then commit and push:
+Open `index.html` in a browser, or serve it:
 
 ```bash
-git add .
-git commit -m "Update site"
-git push
+npx serve .
 ```
+
+## Deploy
+
+Works as-is on GitHub Pages, Netlify, Cloudflare Pages, or any static host.
+
+## Repo
+
+https://github.com/ZeeBuild/OC-Site
