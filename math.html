@@ -258,10 +258,10 @@
   <div class="setup">
     <span class="setup-label">Round length</span>
     <div class="presets" id="presets" role="group" aria-label="Round length">
-      <button type="button" class="preset selected" data-seconds="60" aria-pressed="true">1 min</button>
+      <button type="button" class="preset selected" data-seconds="0" aria-pressed="true">Practice</button>
+      <button type="button" class="preset" data-seconds="60" aria-pressed="false">1 min</button>
       <button type="button" class="preset" data-seconds="120" aria-pressed="false">2 min</button>
       <button type="button" class="preset" data-seconds="300" aria-pressed="false">5 min</button>
-      <button type="button" class="preset" data-seconds="0" aria-pressed="false">No timer</button>
     </div>
     <button type="button" id="startBtn" class="primary">Start</button>
     <span class="setup-label">Equation</span>
@@ -346,8 +346,8 @@
       if (Number.isFinite(stored) && stored >= 0) best = stored;
     } catch (e) { /* storage unavailable */ }
 
-    let roundSeconds = 60;
-    let secondsLeft = 60;
+    let roundSeconds = 0;
+    let secondsLeft = 0;
     let score = 0;
     let running = false;
     let answer = '';
@@ -517,15 +517,22 @@
 
       const count = jumps.length;
       const pad = 36;
-      const dx = count ? (400 - pad * 2) / count : 0;
       const base = 100;
-      const endX = pad + dx * count;
       const reverse = sign === '\u2212';
-      const xAt = (i) => reverse ? pad + dx * (count - i) : pad + dx * i;
+      const unit = count ? (400 - pad * 2) / count : 0;
+      const widths = jumps.map((j) => j === 10 ? 1 : 0.5);
+      const total = widths.reduce((sum, w) => sum + w, 0) * unit;
+      const left = (400 - total) / 2;
+      const xs = [reverse ? left + total : left];
+      for (let i = 0; i < count; i++) {
+        xs.push(xs[i] + (reverse ? -1 : 1) * widths[i] * unit);
+      }
+      const minX = Math.min.apply(null, xs);
+      const maxX = Math.max.apply(null, xs);
 
-      add('line', { x1: pad - 20, y1: base, x2: endX + 12, y2: base, class: 'nl-base' });
-      const tip = reverse ? pad - 18 : endX + 18;
-      const back = reverse ? pad - 9 : endX + 9;
+      add('line', { x1: minX - 20, y1: base, x2: maxX + 12, y2: base, class: 'nl-base' });
+      const tip = reverse ? minX - 18 : maxX + 18;
+      const back = reverse ? minX - 9 : maxX + 9;
       add('polygon', {
         points: tip + ',' + base + ' ' + back + ',' + (base - 5) + ' ' + back + ',' + (base + 5),
         class: 'nl-arrow'
@@ -533,13 +540,13 @@
 
       let value = start;
       for (let i = 0; i <= count; i++) {
-        const x = xAt(i);
+        const x = xs[i];
         const last = i === count;
         add('line', { x1: x, y1: base - 6, x2: x, y2: base + 6, class: 'nl-tick' });
         add('circle', { cx: x, cy: base, r: 4, class: 'nl-dot' + (last ? ' end' : '') });
         add('text', { x: x, y: 124, class: 'nl-label' + (last ? ' end' : ''), 'text-anchor': 'middle' }, String(value));
         if (i < count) {
-          const nx = xAt(i + 1);
+          const nx = xs[i + 1];
           const bigJump = jumps[i] === 10;
           const lift = bigJump ? (i % 2 === 0 ? 42 : 60) : (i % 2 === 0 ? 9 : 12);
           add('path', {
@@ -763,7 +770,7 @@
       }
     });
 
-    selectPreset(60);
+    selectPreset(0);
     bestEl.textContent = best;
   </script>
 </body>
