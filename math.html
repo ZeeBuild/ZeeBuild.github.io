@@ -540,12 +540,13 @@
         add('text', { x: x, y: 124, class: 'nl-label' + (last ? ' end' : ''), 'text-anchor': 'middle' }, String(value));
         if (i < count) {
           const nx = xAt(i + 1);
-          const lift = i % 2 === 0 ? 42 : 60;
+          const bigJump = jumps[i] === 10;
+          const lift = bigJump ? (i % 2 === 0 ? 42 : 60) : (i % 2 === 0 ? 9 : 12);
           add('path', {
             d: 'M ' + x + ' ' + base + ' C ' + x + ' ' + (base - lift) + ', ' + nx + ' ' + (base - lift) + ', ' + nx + ' ' + base,
             class: 'nl-arc'
           });
-          add('text', { x: (x + nx) / 2, y: base - lift + 4, class: 'nl-jump' }, sign + jumps[i]);
+          add('text', { x: (x + nx) / 2, y: base - lift + (bigJump ? 4 : -4), class: 'nl-jump' }, sign + jumps[i]);
           value += sign === '+' ? jumps[i] : -jumps[i];
         }
       }
