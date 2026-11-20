@@ -132,6 +132,31 @@
     .feedback.good { color: var(--good); }
     .feedback.bad { color: var(--bad); }
 
+    .work {
+      border-top: 1px solid var(--border);
+      padding-top: 0.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      text-align: left;
+    }
+    .work h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+    }
+    .work .steps { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+    .work .steps .line { color: var(--muted); }
+    .work .steps .line:last-child { color: var(--text); font-weight: 700; }
+    .number-line { display: flex; align-items: center; flex-wrap: wrap; gap: 0.2rem; font-variant-numeric: tabular-nums; }
+    .number-line .tick { border: 1px solid var(--border); border-radius: 6px; padding: 0.1rem 0.35rem; font-size: 0.85rem; }
+    .number-line .tick.end { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+    .number-line .jump { color: var(--muted); font-size: 0.8rem; }
+    .work-summary { color: var(--muted); font-size: 0.85rem; }
+    .work .next { align-self: center; }
+
     .numpad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -200,6 +225,19 @@
 
       <p class="feedback" id="feedback" aria-live="polite">Choose a round length and press Start.</p>
 
+      <div class="work" id="work" hidden>
+        <div>
+          <h3>Break apart</h3>
+          <div class="steps" id="workSteps"></div>
+        </div>
+        <div>
+          <h3>Number line</h3>
+          <div class="number-line" id="workLine"></div>
+          <div class="work-summary" id="workSummary"></div>
+        </div>
+        <button type="button" id="nextBtn" class="primary next">Next question</button>
+      </div>
+
       <div class="numpad" id="numpad">
         <button type="button" data-key="1" aria-label="Digit 1">1</button>
         <button type="button" data-key="2" aria-label="Digit 2">2</button>
@@ -237,6 +275,11 @@
     const answerEl = document.getElementById('answer');
     const checkBtn = document.getElementById('checkBtn');
     const feedbackEl = document.getElementById('feedback');
+    const workEl = document.getElementById('work');
+    const workStepsEl = document.getElementById('workSteps');
+    const workLineEl = document.getElementById('workLine');
+    const workSummaryEl = document.getElementById('workSummary');
+    const nextBtn = document.getElementById('nextBtn');
     const numpadEl = document.getElementById('numpad');
     const overlay = document.getElementById('overlay');
     const overlayTitle = document.getElementById('overlayTitle');
@@ -259,6 +302,7 @@
     let deadline = 0;
     let timerId = null;
     let vertical = false;
+    let showingWork = false;
 
     function updateHud() {
       scoreEl.textContent = score;
@@ -329,21 +373,99 @@
     }
 
     function appendDigit(digit) {
-      if (!running || answer.length >= 3) return;
+      if (!running || showingWork || answer.length >= 3) return;
       answer += digit;
       answerEl.textContent = answer;
       answerEl.classList.remove('empty');
     }
 
     function backspace() {
-      if (!running) return;
+      if (!running || showingWork) return;
       answer = answer.slice(0, -1);
       answerEl.textContent = answer || '\u2014';
       answerEl.classList.toggle('empty', answer === '');
     }
 
+    function partsOf(n) {
+      return { tens: Math.floor(n / 10) * 10, ones: n % 10 };
+    }
+
+    function workRow(text) {
+      const row = document.createElement('div');
+      row.className = 'line';
+      row.textContent = text;
+      return row;
+    }
+
+    function renderWork() {
+      const { a, b, op, result } = current;
+      const parts = partsOf(b);
+      const steps = [];
+      if (parts.tens) steps.push(parts.tens);
+      if (parts.ones) steps.push(parts.ones);
+      const sign = op === '+' ? '+' : '\u2212';
+
+      workStepsEl.replaceChildren();
+      workStepsEl.appendChild(workRow(b + ' = ' + steps.join(' + ')));
+      let prev = a;
+      steps.forEach((step) => {
+        const next = prev + (op === '+' ? step : -step);
+        workStepsEl.appendChild(workRow(prev + ' ' + sign + ' ' + step + ' = ' + next));
+        prev = next;
+      });
+
+      workLineEl.replaceChildren();
+      const tick = (value) => {
+        const el = document.createElement('span');
+        el.className = 'tick';
+        el.textContent = value;
+        workLineEl.appendChild(el);
+      };
+      const jump = (step) => {
+        const el = document.createElement('span');
+        el.className = 'jump';
+        el.textContent = '\u2192' + sign + step;
+        workLineEl.appendChild(el);
+      };
+      tick(a);
+      let value = a;
+      for (let t = 0; t < parts.tens / 10; t++) {
+        jump(10);
+        value += (op === '+' ? 10 : -10);
+        tick(value);
+      }
+      for (let o = 0; o < parts.ones; o++) {
+        jump(1);
+        value += (op === '+' ? 1 : -1);
+        tick(value);
+      }
+      if (workLineEl.lastElementChild) workLineEl.lastElementChild.classList.add('end');
+
+      workSummaryEl.textContent = a + ' ' + op + ' ' + b + ' = ' + result;
+    }
+
+    function setWorkVisible(visible) {
+      showingWork = visible;
+      workEl.hidden = !visible;
+      checkBtn.disabled = visible;
+      numpadEl.querySelectorAll('button').forEach((b) => { b.disabled = visible; });
+    }
+
+    function showWork() {
+      renderWork();
+      setWorkVisible(true);
+      nextBtn.focus();
+    }
+
+    function nextQuestion() {
+      setWorkVisible(false);
+      clearAnswer();
+      generateQuestion();
+      setFeedback('Go!');
+    }
+
     function submit() {
-      if (!running || answer === '') return;
+      if (!running || showingWork || answer === '') return;
       if (Number(answer) === current.result) {
         score++;
         setFeedback('Correct! +1 point', 'good');
@@ -352,10 +474,12 @@
         setFeedback('Not quite — it was ' + current.result + '.', 'bad');
       }
       clearAnswer();
-      generateQuestion();
+      if (roundSeconds === 0) showWork();
+      else generateQuestion();
     }
 
     function start() {
+      setWorkVisible(false);
       score = 0;
       secondsLeft = roundSeconds;
       running = true;
@@ -388,6 +512,7 @@
       if (timerId) clearInterval(timerId);
       timerId = null;
       secondsLeft = 0;
+      setWorkVisible(false);
       clearAnswer();
       current = null;
       renderQuestion();
@@ -419,6 +544,7 @@
     });
     againBtn.addEventListener('click', start);
     checkBtn.addEventListener('click', submit);
+    nextBtn.addEventListener('click', nextQuestion);
 
     layoutBtn.addEventListener('click', () => {
       vertical = !vertical;
@@ -431,6 +557,7 @@
       const b = e.target.closest('button[data-key]');
       if (!b) return;
       const key = b.dataset.key;
+      if (showingWork) return;
       if (/^\d$/.test(key)) appendDigit(key);
       else if (key === 'back') backspace();
       else if (key === 'clear') clearAnswer();
@@ -442,6 +569,13 @@
         if ((e.key === 'Enter' || e.code === 'Space') && !onButton) {
           e.preventDefault();
           start();
+        }
+        return;
+      }
+      if (showingWork) {
+        if (e.key === 'Enter' || e.code === 'Space') {
+          e.preventDefault();
+          nextQuestion();
         }
         return;
       }
