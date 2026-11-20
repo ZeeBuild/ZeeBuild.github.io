@@ -99,6 +99,17 @@
       letter-spacing: 0.03em;
       padding: 0.4rem 0;
     }
+    .question.vertical {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      width: max-content;
+      margin-inline: auto;
+      line-height: 1.1;
+      padding: 0;
+    }
+    .question.vertical .v-row { padding-right: 0.35rem; }
+    .question.vertical .v-rule { width: 100%; height: 2px; background: var(--text); margin: 0.15rem 0; }
 
     .answer-row { display: flex; gap: 0.6rem; }
     .answer {
@@ -174,6 +185,8 @@
       <button type="button" class="preset" data-seconds="0" aria-pressed="false">No timer</button>
     </div>
     <button type="button" id="startBtn" class="primary">Start</button>
+    <span class="setup-label">Equation</span>
+    <button type="button" id="layoutBtn" class="preset" aria-pressed="false" aria-label="Show equations vertically">Vertical</button>
   </div>
 
   <div class="board-wrap">
@@ -219,6 +232,7 @@
     const timeFill = document.getElementById('timeFill');
     const presetsEl = document.getElementById('presets');
     const startBtn = document.getElementById('startBtn');
+    const layoutBtn = document.getElementById('layoutBtn');
     const questionEl = document.getElementById('question');
     const answerEl = document.getElementById('answer');
     const checkBtn = document.getElementById('checkBtn');
@@ -244,6 +258,7 @@
     let lastKey = '';
     let deadline = 0;
     let timerId = null;
+    let vertical = false;
 
     function updateHud() {
       scoreEl.textContent = score;
@@ -271,6 +286,20 @@
       feedbackEl.className = 'feedback' + (tone ? ' ' + tone : '');
     }
 
+    function renderQuestion() {
+      questionEl.classList.toggle('vertical', vertical && !!current);
+      if (!current) {
+        questionEl.textContent = '\u2014 + \u2014 = ?';
+      } else if (vertical) {
+        questionEl.innerHTML = '<span class="v-row">' + current.a + '</span>' +
+          '<span class="v-row">' + current.op + ' ' + current.b + '</span>' +
+          '<span class="v-rule"></span>' +
+          '<span class="v-row">?</span>';
+      } else {
+        questionEl.textContent = current.a + ' ' + current.op + ' ' + current.b + ' = ?';
+      }
+    }
+
     function generateQuestion() {
       let q, key, tries = 0;
       do {
@@ -290,7 +319,7 @@
       } while (key === lastKey && tries < 10);
       lastKey = key;
       current = q;
-      questionEl.textContent = q.a + ' ' + q.op + ' ' + q.b + ' = ?';
+      renderQuestion();
     }
 
     function clearAnswer() {
@@ -360,7 +389,8 @@
       timerId = null;
       secondsLeft = 0;
       clearAnswer();
-      questionEl.textContent = '\u2014 + \u2014 = ?';
+      current = null;
+      renderQuestion();
 
       if (score > best) {
         best = score;
@@ -389,6 +419,13 @@
     });
     againBtn.addEventListener('click', start);
     checkBtn.addEventListener('click', submit);
+
+    layoutBtn.addEventListener('click', () => {
+      vertical = !vertical;
+      layoutBtn.classList.toggle('selected', vertical);
+      layoutBtn.setAttribute('aria-pressed', String(vertical));
+      renderQuestion();
+    });
 
     numpadEl.addEventListener('click', (e) => {
       const b = e.target.closest('button[data-key]');
