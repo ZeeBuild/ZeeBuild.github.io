@@ -147,13 +147,38 @@
       color: var(--accent);
       margin-bottom: 0.35rem;
     }
-    .work .steps { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
-    .work .steps .line { color: var(--muted); }
-    .work .steps .line:last-child { color: var(--text); font-weight: 700; }
-    .number-line { display: flex; align-items: center; flex-wrap: wrap; gap: 0.2rem; font-variant-numeric: tabular-nums; }
-    .number-line .tick { border: 1px solid var(--border); border-radius: 6px; padding: 0.1rem 0.35rem; font-size: 0.85rem; }
-    .number-line .tick.end { border-color: var(--accent); color: var(--accent); font-weight: 700; }
-    .number-line .jump { color: var(--muted); font-size: 0.8rem; }
+    .break-grid {
+      display: grid;
+      grid-template-columns: repeat(4, auto);
+      gap: 0.35rem 0.5rem;
+      justify-content: center;
+      align-items: center;
+    }
+    .break-grid .term, .break-grid .result { font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .break-grid .op { font-size: 1.2rem; color: var(--muted); }
+    .break-grid .target { color: var(--accent); }
+    .down { grid-column: 3; width: 8rem; display: flex; flex-direction: column; align-items: center; }
+    .down .stem { width: 2px; height: 10px; background: var(--border); }
+    .down .arms { display: flex; width: 100%; }
+    .down .arms i { flex: 1; position: relative; border-top: 2px solid var(--border); }
+    .down .arms i::after { content: ''; position: absolute; left: 50%; top: 0; width: 2px; height: 9px; background: var(--border); }
+    .down .boxes { display: flex; gap: 0.5rem; width: 100%; }
+    .down .box { flex: 1; min-width: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.3rem 0.2rem; text-align: center; }
+    .down .box b { display: block; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+    .down .box small { display: block; color: var(--muted); font-size: 0.6rem; letter-spacing: 0.08em; }
+    .break-steps { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 0.15rem; margin-top: 0.2rem; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+    .break-steps .line { color: var(--muted); }
+    .break-steps .line:last-child { color: var(--text); font-weight: 700; }
+    .nl-svg { display: block; width: 100%; height: auto; }
+    .nl-base, .nl-tick { stroke: var(--border); stroke-width: 2; }
+    .nl-tick { stroke-width: 1.5; }
+    .nl-dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+    .nl-dot.end { fill: var(--accent); }
+    .nl-label { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+    .nl-label.end { fill: var(--accent); font-weight: 700; }
+    .nl-arc { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+    .nl-arrow { fill: var(--border); }
+    .nl-jump { fill: var(--text); font-size: 10px; text-anchor: middle; }
     .work-summary { color: var(--muted); font-size: 0.85rem; }
     .work .next { align-self: center; }
 
@@ -397,50 +422,121 @@
       return row;
     }
 
+    function renderNumberLine(start, jumps, sign, end) {
+      const ns = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('viewBox', '0 0 400 140');
+      svg.setAttribute('class', 'nl-svg');
+      svg.setAttribute('role', 'img');
+      svg.setAttribute('aria-label', 'Open number line from ' + start + ' to ' + end);
+      const add = (tag, attrs, text) => {
+        const el = document.createElementNS(ns, tag);
+        Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, String(v)));
+        if (text !== undefined) el.textContent = text;
+        svg.appendChild(el);
+        return el;
+      };
+
+      const count = jumps.length;
+      const pad = 36;
+      const dx = count ? (400 - pad * 2) / count : 0;
+      const base = 100;
+      const endX = pad + dx * count;
+      const reverse = sign === '\u2212';
+      const xAt = (i) => reverse ? pad + dx * (count - i) : pad + dx * i;
+
+      add('line', { x1: pad - 20, y1: base, x2: endX + 12, y2: base, class: 'nl-base' });
+      const tip = reverse ? pad - 18 : endX + 18;
+      const back = reverse ? pad - 9 : endX + 9;
+      add('polygon', {
+        points: tip + ',' + base + ' ' + back + ',' + (base - 5) + ' ' + back + ',' + (base + 5),
+        class: 'nl-arrow'
+      });
+
+      let value = start;
+      for (let i = 0; i <= count; i++) {
+        const x = xAt(i);
+        const last = i === count;
+        add('line', { x1: x, y1: base - 6, x2: x, y2: base + 6, class: 'nl-tick' });
+        add('circle', { cx: x, cy: base, r: 4, class: 'nl-dot' + (last ? ' end' : '') });
+        add('text', { x: x, y: 124, class: 'nl-label' + (last ? ' end' : ''), 'text-anchor': 'middle' }, String(value));
+        if (i < count) {
+          const nx = xAt(i + 1);
+          const lift = i % 2 === 0 ? 42 : 60;
+          add('path', {
+            d: 'M ' + x + ' ' + base + ' C ' + x + ' ' + (base - lift) + ', ' + nx + ' ' + (base - lift) + ', ' + nx + ' ' + base,
+            class: 'nl-arc'
+          });
+          add('text', { x: (x + nx) / 2, y: base - lift + 4, class: 'nl-jump' }, sign + jumps[i]);
+          value += sign === '+' ? jumps[i] : -jumps[i];
+        }
+      }
+
+      workLineEl.replaceChildren(svg);
+    }
+
     function renderWork() {
       const { a, b, op, result } = current;
       const parts = partsOf(b);
       const steps = [];
       if (parts.tens) steps.push(parts.tens);
       if (parts.ones) steps.push(parts.ones);
+      const jumps = [];
+      for (let t = 0; t < parts.tens / 10; t++) jumps.push(10);
+      for (let o = 0; o < parts.ones; o++) jumps.push(1);
       const sign = op === '+' ? '+' : '\u2212';
 
+      workStepsEl.className = 'break-grid';
       workStepsEl.replaceChildren();
-      workStepsEl.appendChild(workRow(b + ' = ' + steps.join(' + ')));
+      const cell = (text, cls) => {
+        const el = document.createElement('span');
+        el.className = cls;
+        el.textContent = text;
+        workStepsEl.appendChild(el);
+      };
+      cell(String(a), 'term');
+      cell(sign, 'op');
+      cell(String(b), 'term target');
+      cell('= ' + result, 'result');
+
+      const down = document.createElement('div');
+      down.className = 'down';
+      const stem = document.createElement('div');
+      stem.className = 'stem';
+      down.appendChild(stem);
+      const arms = document.createElement('div');
+      arms.className = 'arms';
+      arms.appendChild(document.createElement('i'));
+      arms.appendChild(document.createElement('i'));
+      down.appendChild(arms);
+      const boxes = document.createElement('div');
+      boxes.className = 'boxes';
+      steps.forEach((value, idx) => {
+        const box = document.createElement('div');
+        box.className = 'box';
+        const val = document.createElement('b');
+        val.textContent = value;
+        const label = document.createElement('small');
+        label.textContent = idx === 0 && parts.tens ? 'TENS' : 'ONES';
+        box.appendChild(val);
+        box.appendChild(label);
+        boxes.appendChild(box);
+      });
+      down.appendChild(boxes);
+      workStepsEl.appendChild(down);
+
+      const stepList = document.createElement('div');
+      stepList.className = 'break-steps';
+      stepList.appendChild(workRow(b + ' = ' + steps.join(' + ')));
       let prev = a;
       steps.forEach((step) => {
         const next = prev + (op === '+' ? step : -step);
-        workStepsEl.appendChild(workRow(prev + ' ' + sign + ' ' + step + ' = ' + next));
+        stepList.appendChild(workRow(prev + ' ' + sign + ' ' + step + ' = ' + next));
         prev = next;
       });
+      workStepsEl.appendChild(stepList);
 
-      workLineEl.replaceChildren();
-      const tick = (value) => {
-        const el = document.createElement('span');
-        el.className = 'tick';
-        el.textContent = value;
-        workLineEl.appendChild(el);
-      };
-      const jump = (step) => {
-        const el = document.createElement('span');
-        el.className = 'jump';
-        el.textContent = '\u2192' + sign + step;
-        workLineEl.appendChild(el);
-      };
-      tick(a);
-      let value = a;
-      for (let t = 0; t < parts.tens / 10; t++) {
-        jump(10);
-        value += (op === '+' ? 10 : -10);
-        tick(value);
-      }
-      for (let o = 0; o < parts.ones; o++) {
-        jump(1);
-        value += (op === '+' ? 1 : -1);
-        tick(value);
-      }
-      if (workLineEl.lastElementChild) workLineEl.lastElementChild.classList.add('end');
-
+      renderNumberLine(a, jumps, sign, result);
       workSummaryEl.textContent = a + ' ' + op + ' ' + b + ' = ' + result;
     }
 
