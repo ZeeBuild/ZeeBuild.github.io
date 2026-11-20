@@ -15,6 +15,8 @@
       --border: #30363d;
       --good: #3fb950;
       --bad: #f85149;
+      --tens: #58a6ff;
+      --ones: #e3b341;
       --radius: 12px;
     }
 
@@ -147,28 +149,55 @@
       color: var(--accent);
       margin-bottom: 0.35rem;
     }
-    .break-grid {
-      display: grid;
-      grid-template-columns: repeat(4, auto);
-      gap: 0.35rem 0.5rem;
+    .break-diagram { display: flex; flex-direction: column; gap: 0.75rem; }
+    .break-equation {
+      display: flex;
+      align-items: flex-start;
       justify-content: center;
-      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
     }
-    .break-grid .term, .break-grid .result { font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-    .break-grid .op { font-size: 1.2rem; color: var(--muted); }
-    .break-grid .target { color: var(--accent); }
-    .down { grid-column: 3; width: 8rem; display: flex; flex-direction: column; align-items: center; }
-    .down .stem { width: 2px; height: 10px; background: var(--border); }
-    .down .arms { display: flex; width: 100%; }
-    .down .arms i { flex: 1; position: relative; border-top: 2px solid var(--border); }
-    .down .arms i::after { content: ''; position: absolute; left: 50%; top: 0; width: 2px; height: 9px; background: var(--border); }
-    .down .boxes { display: flex; gap: 0.5rem; width: 100%; }
-    .down .box { flex: 1; min-width: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.3rem 0.2rem; text-align: center; }
-    .down .box b { display: block; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
-    .down .box small { display: block; color: var(--muted); font-size: 0.6rem; letter-spacing: 0.08em; }
-    .break-steps { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 0.15rem; margin-top: 0.2rem; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
-    .break-steps .line { color: var(--muted); }
-    .break-steps .line:last-child { color: var(--text); font-weight: 700; }
+    .break-term { display: flex; flex-direction: column; align-items: center; min-width: 5.6rem; }
+    .break-term .num { font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.2; }
+    .break-term .num.whole { color: var(--text); }
+    .break-term .num.split { color: var(--accent); }
+    .break-op { font-size: 1.3rem; color: var(--muted); padding-top: 0.1rem; }
+    .break-result { font-size: 1.4rem; font-weight: 700; color: var(--good); padding-top: 0.1rem; font-variant-numeric: tabular-nums; }
+    .bond {
+      width: 100%;
+      height: 16px;
+      position: relative;
+      margin-top: 2px;
+    }
+    .bond .stem { position: absolute; left: 50%; top: 0; width: 2px; height: 8px; background: var(--border); }
+    .bond .bar { position: absolute; left: 24%; right: 24%; top: 8px; height: 2px; background: var(--border); }
+    .bond .leg { position: absolute; top: 8px; width: 2px; height: 8px; background: var(--border); }
+    .bond .leg.left { left: 24%; }
+    .bond .leg.right { right: 24%; }
+    .break-boxes { display: flex; gap: 0.45rem; width: 100%; }
+    .break-box {
+      flex: 1;
+      min-width: 0;
+      text-align: center;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 0.3rem 0.15rem;
+    }
+    .break-box.tens { border-color: var(--tens); }
+    .break-box.ones { border-color: var(--ones); }
+    .break-box b { display: block; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+    .break-box.tens b { color: var(--tens); }
+    .break-box.ones b { color: var(--ones); }
+    .break-box small { display: block; color: var(--muted); font-size: 0.55rem; letter-spacing: 0.08em; }
+    .break-steps { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.95rem; font-variant-numeric: tabular-nums; }
+    .break-steps .line { display: flex; gap: 0.5rem; align-items: baseline; color: var(--muted); }
+    .break-steps .line .tag { min-width: 3.4rem; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+    .break-steps .line.tens-line .eq { color: var(--tens); }
+    .break-steps .line.ones-line .eq { color: var(--ones); }
+    .break-steps .line.final { color: var(--text); font-weight: 700; }
+    .break-steps .line.final .eq { color: var(--good); }
+    .break-steps .note { font-size: 0.8rem; color: var(--muted); padding-left: 3.9rem; }
     .nl-svg { display: block; width: 100%; height: auto; }
     .nl-base, .nl-tick { stroke: var(--border); stroke-width: 2; }
     .nl-tick { stroke-width: 1.5; }
@@ -422,6 +451,55 @@
       return row;
     }
 
+    function breakBoxes(parts) {
+      const bond = document.createElement('div');
+      bond.className = 'bond';
+      ['stem', 'bar', 'leg left', 'leg right'].forEach((cls) => {
+        const el = document.createElement('span');
+        el.className = cls;
+        bond.appendChild(el);
+      });
+      const boxes = document.createElement('div');
+      boxes.className = 'break-boxes';
+      [['tens', parts.tens, 'TENS'], ['ones', parts.ones, 'ONES']].forEach(([kind, value, label]) => {
+        const box = document.createElement('div');
+        box.className = 'break-box ' + kind;
+        const b = document.createElement('b');
+        b.textContent = value;
+        const small = document.createElement('small');
+        small.textContent = label;
+        box.appendChild(b);
+        box.appendChild(small);
+        boxes.appendChild(box);
+      });
+      return [bond, boxes];
+    }
+
+    function breakTerm(number, parts) {
+      const term = document.createElement('div');
+      term.className = 'break-term';
+      const num = document.createElement('span');
+      num.className = 'num ' + (parts ? 'split' : 'whole');
+      num.textContent = number;
+      term.appendChild(num);
+      if (parts) breakBoxes(parts).forEach((el) => term.appendChild(el));
+      return term;
+    }
+
+    function breakStep(tag, text, cls) {
+      const line = document.createElement('div');
+      line.className = 'line' + (cls ? ' ' + cls : '');
+      const tagEl = document.createElement('span');
+      tagEl.className = 'tag';
+      tagEl.textContent = tag;
+      const eq = document.createElement('span');
+      eq.className = 'eq';
+      eq.textContent = text;
+      line.appendChild(tagEl);
+      line.appendChild(eq);
+      return line;
+    }
+
     function renderNumberLine(start, jumps, sign, end) {
       const ns = 'http://www.w3.org/2000/svg';
       const svg = document.createElementNS(ns, 'svg');
@@ -477,64 +555,58 @@
 
     function renderWork() {
       const { a, b, op, result } = current;
-      const parts = partsOf(b);
-      const steps = [];
-      if (parts.tens) steps.push(parts.tens);
-      if (parts.ones) steps.push(parts.ones);
+      const aParts = partsOf(a);
+      const bParts = partsOf(b);
       const jumps = [];
-      for (let t = 0; t < parts.tens / 10; t++) jumps.push(10);
-      for (let o = 0; o < parts.ones; o++) jumps.push(1);
+      for (let t = 0; t < bParts.tens / 10; t++) jumps.push(10);
+      for (let o = 0; o < bParts.ones; o++) jumps.push(1);
       const sign = op === '+' ? '+' : '\u2212';
 
-      workStepsEl.className = 'break-grid';
+      workStepsEl.className = 'break-diagram';
       workStepsEl.replaceChildren();
-      const cell = (text, cls) => {
-        const el = document.createElement('span');
-        el.className = cls;
-        el.textContent = text;
-        workStepsEl.appendChild(el);
-      };
-      cell(String(a), 'term');
-      cell(sign, 'op');
-      cell(String(b), 'term target');
-      cell('= ' + result, 'result');
 
-      const down = document.createElement('div');
-      down.className = 'down';
-      const stem = document.createElement('div');
-      stem.className = 'stem';
-      down.appendChild(stem);
-      const arms = document.createElement('div');
-      arms.className = 'arms';
-      arms.appendChild(document.createElement('i'));
-      arms.appendChild(document.createElement('i'));
-      down.appendChild(arms);
-      const boxes = document.createElement('div');
-      boxes.className = 'boxes';
-      steps.forEach((value, idx) => {
-        const box = document.createElement('div');
-        box.className = 'box';
-        const val = document.createElement('b');
-        val.textContent = value;
-        const label = document.createElement('small');
-        label.textContent = idx === 0 && parts.tens ? 'TENS' : 'ONES';
-        box.appendChild(val);
-        box.appendChild(label);
-        boxes.appendChild(box);
-      });
-      down.appendChild(boxes);
-      workStepsEl.appendChild(down);
+      const equation = document.createElement('div');
+      equation.className = 'break-equation';
+      equation.appendChild(breakTerm(a, op === '+' ? aParts : null));
+      const opEl = document.createElement('span');
+      opEl.className = 'break-op';
+      opEl.textContent = sign;
+      equation.appendChild(opEl);
+      equation.appendChild(breakTerm(b, bParts));
+      const equalsEl = document.createElement('span');
+      equalsEl.className = 'break-op';
+      equalsEl.textContent = '=';
+      equation.appendChild(equalsEl);
+      const resultEl = document.createElement('span');
+      resultEl.className = 'break-result';
+      resultEl.textContent = result;
+      equation.appendChild(resultEl);
+      workStepsEl.appendChild(equation);
 
-      const stepList = document.createElement('div');
-      stepList.className = 'break-steps';
-      stepList.appendChild(workRow(b + ' = ' + steps.join(' + ')));
-      let prev = a;
-      steps.forEach((step) => {
-        const next = prev + (op === '+' ? step : -step);
-        stepList.appendChild(workRow(prev + ' ' + sign + ' ' + step + ' = ' + next));
-        prev = next;
-      });
-      workStepsEl.appendChild(stepList);
+      const steps = document.createElement('div');
+      steps.className = 'break-steps';
+      if (op === '+') {
+        const tensSum = aParts.tens + bParts.tens;
+        const onesSum = aParts.ones + bParts.ones;
+        steps.appendChild(breakStep('Tens', aParts.tens + ' + ' + bParts.tens + ' = ' + tensSum, 'tens-line'));
+        steps.appendChild(breakStep('Ones', aParts.ones + ' + ' + bParts.ones + ' = ' + onesSum, 'ones-line'));
+        if (onesSum >= 10) {
+          steps.appendChild(breakStep('Regroup', onesSum + ' = 10 + ' + (onesSum - 10), 'ones-line'));
+          steps.appendChild(breakStep('Final', tensSum + ' + ' + onesSum + ' = ' + result, 'final'));
+          const note = document.createElement('div');
+          note.className = 'note';
+          note.textContent = tensSum + ' + 10 = ' + (tensSum + 10) + ', then + ' + (onesSum - 10) + ' = ' + result;
+          steps.appendChild(note);
+        } else {
+          steps.appendChild(breakStep('Final', tensSum + ' + ' + onesSum + ' = ' + result, 'final'));
+        }
+      } else {
+        const middle = a - bParts.tens;
+        steps.appendChild(breakStep('Break', b + ' = ' + bParts.tens + ' + ' + bParts.ones));
+        steps.appendChild(breakStep('Tens', a + ' \u2212 ' + bParts.tens + ' = ' + middle, 'tens-line'));
+        steps.appendChild(breakStep('Ones', middle + ' \u2212 ' + bParts.ones + ' = ' + result, 'final'));
+      }
+      workStepsEl.appendChild(steps);
 
       renderNumberLine(a, jumps, sign, result);
       workSummaryEl.textContent = a + ' ' + op + ' ' + b + ' = ' + result;
