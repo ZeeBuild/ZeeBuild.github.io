@@ -50,6 +50,18 @@
     .hud .label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; }
     .hud .value { font-size: 1.3rem; font-weight: 700; }
     .hud .best-cell { text-align: center; }
+    .reset-best {
+      display: block;
+      margin: 0.15rem auto 0;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+    }
+    .reset-best:hover:not(:disabled) { color: var(--text); border-color: var(--accent); }
 
     .timebar { width: 100%; max-width: 420px; height: 4px; background: var(--border); border-radius: 999px; overflow: hidden; }
     .timebar-fill { height: 100%; width: 100%; background: var(--accent); transition: width 0.2s linear; }
@@ -234,6 +246,7 @@
     }
     .overlay h2 { font-size: 1.6rem; }
     .overlay p { color: var(--muted); }
+    .overlay-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; }
 
   </style>
 </head>
@@ -249,6 +262,7 @@
     <div class="best-cell">
       <div class="label">Best</div>
       <div class="value" id="best">0</div>
+      <button type="button" id="resetBestBtn" class="reset-best" title="Reset best score" aria-label="Reset best score">Reset</button>
     </div>
     <div><div class="label">Time</div><div class="value" id="time">60</div></div>
   </div>
@@ -311,7 +325,10 @@
     <div class="overlay" id="overlay" hidden>
       <h2 id="overlayTitle">Time's up!</h2>
       <p id="overlayText">Score: 0 &middot; Best: 0</p>
-      <button type="button" id="againBtn" class="primary">Play again</button>
+      <div class="overlay-actions">
+        <button type="button" id="againBtn" class="primary">Play again</button>
+        <button type="button" id="stopBtn">Stop</button>
+      </div>
     </div>
   </div>
 
@@ -339,6 +356,8 @@
     const overlayTitle = document.getElementById('overlayTitle');
     const overlayText = document.getElementById('overlayText');
     const againBtn = document.getElementById('againBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const resetBestBtn = document.getElementById('resetBestBtn');
 
     let best = 0;
     try {
@@ -640,11 +659,26 @@
       setFeedback('Go!');
     }
 
+    // Fun emojis for the green "correct" message. Shark, dino and fireworks
+    // are the priority picks, so they turn up more often than the rest.
+    const priorityEmojis = ['🦈', '🦖', '🎆'];
+    const funEmojis = ['🎉', '⭐', '🏆', '🚀', '💥', '🔥', '😎', '🥳', '✨', '💯', '🌟', '🍕', '🌈', '⚡'];
+
+    function correctMessage() {
+      const pool = Math.random() < 0.6 ? priorityEmojis : funEmojis;
+      const first = pool[Math.floor(Math.random() * pool.length)];
+      let message = 'Correct! +1 point ' + first;
+      if (Math.random() < 0.35) {
+        message += ' ' + funEmojis[Math.floor(Math.random() * funEmojis.length)];
+      }
+      return message;
+    }
+
     function submit() {
       if (!running || showingWork || answer === '') return;
       if (Number(answer) === current.result) {
         score++;
-        setFeedback('Correct! +1 point', 'good');
+        setFeedback(correctMessage(), 'good');
         updateHud();
       } else {
         setFeedback('Not quite — it was ' + current.result + '.', 'bad');
@@ -709,6 +743,29 @@
       againBtn.focus();
     }
 
+    function stop() {
+      running = false;
+      if (timerId) clearInterval(timerId);
+      timerId = null;
+      setWorkVisible(false);
+      clearAnswer();
+      current = null;
+      renderQuestion();
+      setFeedback('Choose a round length and press Start.');
+      overlay.hidden = true;
+      presetsEl.querySelectorAll('button').forEach((b) => { b.disabled = false; });
+      startBtn.disabled = false;
+      startBtn.textContent = 'Start';
+      startBtn.focus();
+    }
+
+    function resetBest() {
+      best = 0;
+      try { localStorage.removeItem('math-best'); } catch (e) { /* storage unavailable */ }
+      updateHud();
+      if (!running && overlay.hidden) setFeedback('Best score reset.');
+    }
+
     presetsEl.addEventListener('click', (e) => {
       const b = e.target.closest('button[data-seconds]');
       if (b) selectPreset(Number(b.dataset.seconds));
@@ -719,6 +776,8 @@
       else start();
     });
     againBtn.addEventListener('click', start);
+    stopBtn.addEventListener('click', stop);
+    resetBestBtn.addEventListener('click', resetBest);
     checkBtn.addEventListener('click', submit);
     nextBtn.addEventListener('click', nextQuestion);
 
