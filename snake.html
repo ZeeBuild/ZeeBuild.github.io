@@ -43,6 +43,19 @@
     }
     .hud .label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; }
     .hud .value { font-size: 1.3rem; font-weight: 700; }
+    .reset-best {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 0.1rem 0.4rem;
+      margin-left: 0.4rem;
+      font-size: 0.65rem;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .reset-best:hover { opacity: 1; border-color: var(--accent); color: var(--text); }
 
     .board-wrap { position: relative; }
 
@@ -138,7 +151,10 @@
 
   <div class="hud">
     <div><div class="label">Score</div><div class="value" id="score">0</div></div>
-    <div><div class="label">Best</div><div class="value" id="best">0</div></div>
+    <div>
+      <div class="label">Best <button id="resetBestBtn" class="reset-best" type="button" title="Reset best score">Reset</button></div>
+      <div class="value" id="best">0</div>
+    </div>
   </div>
 
   <div class="settings-row">
@@ -178,6 +194,7 @@
 
     const scoreEl = document.getElementById('score');
     const bestEl = document.getElementById('best');
+    const resetBestBtn = document.getElementById('resetBestBtn');
     const overlay = document.getElementById('overlay');
     const overlayTitle = document.getElementById('overlayTitle');
     const overlayText = document.getElementById('overlayText');
@@ -485,6 +502,12 @@
     startBtn.addEventListener('click', () => {
       if (paused) togglePause();
       else start();
+    });
+
+    resetBestBtn.addEventListener('click', () => {
+      best = 0;
+      localStorage.removeItem('snake-best');
+      updateHud();
     });
 
     modeBtn.addEventListener('click', () => {
