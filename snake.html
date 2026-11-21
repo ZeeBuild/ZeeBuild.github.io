@@ -140,7 +140,7 @@
   </div>
 
   <div class="board-wrap">
-    <canvas id="board" width="440" height="440" aria-label="Snake game board"></canvas>
+    <canvas id="board" width="528" height="528" aria-label="Snake game board"></canvas>
     <div class="overlay" id="overlay">
       <h2 id="overlayTitle">Snake</h2>
       <p id="overlayText">Eat the food. Don't hit the walls or yourself.</p>
@@ -356,8 +356,8 @@
         if (i === 0) { headGx = gx; headGy = gy; }
 
         ctx.fillStyle = i === 0 ? COLORS.head : COLORS.body;
-        const pad = i === 0 ? 2 : 3;
-        const r = 4;
+        const pad = i === 0 ? 2.4 : 3.6;
+        const r = 4.8;
         const x = gx * CELL + pad, y = gy * CELL + pad;
         const w = CELL - pad * 2, h = CELL - pad * 2;
         roundRect(x, y, w, h, r);
@@ -383,11 +383,11 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.textAlign = 'center';
         ctx.fillStyle = COLORS.text;
-        ctx.font = '700 26px system-ui, sans-serif';
-        ctx.fillText('Blocked!', canvas.width / 2, canvas.height / 2 - 8);
+        ctx.font = '700 31px system-ui, sans-serif';
+        ctx.fillText('Blocked!', canvas.width / 2, canvas.height / 2 - 10);
         ctx.fillStyle = COLORS.muted;
-        ctx.font = '15px system-ui, sans-serif';
-        ctx.fillText('Press a new direction to keep going', canvas.width / 2, canvas.height / 2 + 22);
+        ctx.font = '18px system-ui, sans-serif';
+        ctx.fillText('Press a new direction to keep going', canvas.width / 2, canvas.height / 2 + 26);
         ctx.textAlign = 'start';
       }
     }
