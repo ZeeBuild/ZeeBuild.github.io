@@ -85,6 +85,13 @@
 
     .hint { color: var(--muted); font-size: 0.85rem; text-align: center; }
 
+    .settings-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem 1.5rem;
+    }
     .mode-row {
       display: flex;
       align-items: center;
@@ -134,9 +141,17 @@
     <div><div class="label">Best</div><div class="value" id="best">0</div></div>
   </div>
 
-  <div class="mode-row">
-    <span class="hint" style="margin:0">Mode:</span>
-    <button id="modeBtn" type="button" aria-pressed="false">Normal</button>
+  <div class="settings-row">
+    <div class="mode-row">
+      <span class="hint" style="margin:0">Mode:</span>
+      <button id="modeBtn" type="button" aria-pressed="false">Normal</button>
+    </div>
+    <div class="mode-row">
+      <span class="hint" style="margin:0">Speed:</span>
+      <button class="speedBtn" type="button" data-speed="slow" aria-pressed="false">Slow</button>
+      <button class="speedBtn" type="button" data-speed="medium" aria-pressed="true">Medium</button>
+      <button class="speedBtn" type="button" data-speed="fast" aria-pressed="false">Fast</button>
+    </div>
   </div>
 
   <div class="board-wrap">
@@ -171,9 +186,12 @@
 
     const GRID = 20;                 // cells per side
     const CELL = canvas.width / GRID;
-    const START_MS = 210;            // starting step duration (slower)
-    const MIN_MS = 110;              // fastest step duration (slower)
-    const SPEED_STEP = 2;            // gentler speed-up per food
+    // Step timing for each speed setting; Medium is the default (the previous speed)
+    const SPEEDS = {
+      slow:   { start: 300, min: 170, step: 2 },
+      medium: { start: 210, min: 110, step: 2 },
+      fast:   { start: 140, min: 65,  step: 4 }
+    };
 
     const COLORS = {
       head: '#4c8dff',
@@ -188,6 +206,9 @@
     // Easy mode: obstacles pause instead of ending the run (remembered between visits)
     let easyMode = localStorage.getItem('snake-easy') === '1';
 
+    const savedSpeed = localStorage.getItem('snake-speed');
+    let speed = Object.prototype.hasOwnProperty.call(SPEEDS, savedSpeed) ? savedSpeed : 'medium';
+
     function syncModeBtn() {
       modeBtn.textContent = easyMode ? 'Easy' : 'Normal';
       modeBtn.setAttribute('aria-pressed', String(easyMode));
@@ -196,6 +217,17 @@
           ? 'Eat the food. Obstacles pause instead of ending the game.'
           : "Eat the food. Don't hit the walls or yourself.";
       }
+    }
+
+    function syncSpeedBtns() {
+      document.querySelectorAll('.speedBtn').forEach((btn) => {
+        btn.setAttribute('aria-pressed', String(btn.dataset.speed === speed));
+      });
+    }
+
+    function applySpeed() {
+      const s = SPEEDS[speed];
+      stepMs = Math.max(s.min, s.start - score * s.step);
     }
 
     best = Number(localStorage.getItem('snake-best') || 0);
@@ -207,7 +239,7 @@
       dir = { x: 1, y: 0 };
       nextDir = dir;
       score = 0;
-      stepMs = START_MS;
+      applySpeed();
       dead = false;
       paused = false;
       waiting = false;
@@ -287,7 +319,7 @@
       if (head.x === food.x && head.y === food.y) {
         score++;
         // Speed up gradually as the snake grows
-        stepMs = Math.max(MIN_MS, START_MS - score * SPEED_STEP);
+        applySpeed();
         if (score > best) {
           best = score;
           localStorage.setItem('snake-best', best);
@@ -467,8 +499,19 @@
       }
     });
 
+    document.querySelectorAll('.speedBtn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        speed = btn.dataset.speed;
+        localStorage.setItem('snake-speed', speed);
+        syncSpeedBtns();
+        applySpeed();
+        lastStep = performance.now();   // avoid an immediate catch-up step
+      });
+    });
+
     // Init
     syncModeBtn();
+    syncSpeedBtns();
     reset();
     running = false;
     requestAnimationFrame(step);
