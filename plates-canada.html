@@ -127,8 +127,21 @@
       background: var(--accent); color: #fff; font-weight: 700; font-size: 0.9rem;
       border-radius: 8px; padding: 0.5rem 0.65rem; min-width: 2.8rem; text-align: center;
     }
+    .detail-head > div { flex: 1; min-width: 0; }
     .detail-head h2 { font-size: 1.4rem; line-height: 1.2; }
     .detail-head p { color: var(--muted); font-size: 0.85rem; }
+    .title-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+    .pron { color: var(--muted); font-size: 0.8rem; font-weight: 500; white-space: nowrap; }
+    .speak {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      background: #233049; color: var(--text); border: 1px solid var(--border);
+      border-radius: 999px; padding: 0.3rem 0.6rem; font: inherit; font-size: 0.76rem;
+      line-height: 1; cursor: pointer;
+    }
+    .speak svg { width: 13px; height: 13px; fill: currentColor; flex: none; }
+    .speak:hover, .speak.speaking { color: var(--accent); border-color: var(--accent); }
+    .speak[hidden] { display: none; }
+    .speak:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
     .plate-preview {
       width: 100%; aspect-ratio: 12 / 6; min-height: 100px;
@@ -234,14 +247,21 @@
           <button class="pin" id="pePin" type="button" data-abbr="PE">PE</button>
           <div class="tooltip" id="tooltip" hidden></div>
         </div>
-        <p class="hint">Tip: use Tab to move between provinces, Enter or Space to pin one.</p>
+        <p class="hint">Tip: use Tab to move between provinces, Enter or Space to pin one. Press Listen beside a province name to hear it said in English.</p>
       </section>
 
       <aside class="detail-card" id="detail" aria-live="polite">
         <div class="detail-head">
           <span class="abbr" id="dAbbr">—</span>
           <div>
-            <h2 id="dName">Pick a province</h2>
+            <div class="title-row">
+              <h2 id="dName">Pick a province</h2>
+              <span class="pron" id="dPron" hidden></span>
+              <button class="speak" id="speakBtn" type="button" hidden aria-label="Hear this province name pronounced in English">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M7 2.5 3.8 5.5H1v5h2.8L7 13.5v-11Zm1.2 2.1a3.6 3.6 0 0 1 0 6.8V12a5.2 5.2 0 0 0 0-8v.6Zm2-2.1a6.4 6.4 0 0 1 0 11v1.2a7.6 7.6 0 0 0 0-13.4V2.5Z"/></svg>
+                <span class="speak-text">Listen</span>
+              </button>
+            </div>
             <p id="dLabel">Standard passenger plate</p>
           </div>
         </div>
@@ -280,19 +300,19 @@
 
   <script>
     const PROVINCES = {
-      AB: { name: "Alberta", plate: "Strong and Free (2026 design)", tag: "STANDARD", desc: "Alberta replaced its long-running “Wild Rose Country” base on 9 November 2026 with a photograph of Moraine Lake, a wild rose splitting the serial and “Strong and Free” along the bottom. Only rear plates are issued.", agency: "Service Alberta", c: ["#e8f0f4", "#1d3f6b", "#b62a37"], photo: "assets/plates/canada/alberta.jpg", photoAlt: "Alberta 2026 licence plate with Moraine Lake and the Strong and Free motto", creditAuthor: "Government of Alberta", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Licence-plate-moraine-lake-8.jpg", creditLicense: "OGL Canada 2.0", licenseUrl: "https://open.canada.ca/en/open-government-licence-canada" },
-      BC: { name: "British Columbia", plate: "Beautiful British Columbia (2025 series)", tag: "STANDARD", desc: "British Columbia has carried “Beautiful British Columbia” beneath a stylized provincial flag since 1985. The August 2025 revision kept the artwork and switched to an A12 3BC serial, bringing the letters U, Y and Z back into use.", agency: "ICBC", c: ["#ffffff", "#173a6b", "#d21f2c"], photo: "assets/plates/canada/british-columbia.jpg", photoAlt: "British Columbia licence plate with the provincial flag and Beautiful British Columbia", creditAuthor: "LynxFromVancouver", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:BC_August_2025_License_Plate.jpg", creditLicense: "CC0", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/" },
-      MB: { name: "Manitoba", plate: "Friendly Manitoba", tag: "STANDARD", desc: "Manitoba's base, in use since late 2012, screens a river, a green treeline and a wheat field around the serial, with a black bison at the top right and “Friendly Manitoba” across the top. A French “Bienvenue” variant is issued as an alternative.", agency: "Manitoba Public Insurance", c: ["#ffffff", "#1f2f6b", "#0f7b5a"], photo: "assets/plates/canada/manitoba.jpg", photoAlt: "Manitoba Friendly Manitoba licence plate with bison and river scene", creditAuthor: "Jerry “Woody”", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Manitoba_License_Plate_2012.jpg", creditLicense: "CC BY-SA 2.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/" },
-      NB: { name: "New Brunswick", plate: "Provincial wordmark (2011 design)", tag: "STANDARD", desc: "New Brunswick's 2011 base sets a red serial on white between gold and sky-blue curved bands, closed by the provincial wordmark. Only a rear plate is required.", agency: "Service New Brunswick", c: ["#ffffff", "#b3242b", "#1c6ea4"], photo: "assets/plates/canada/new-brunswick.jpg", photoAlt: "New Brunswick licence plate with gold and blue bands", creditAuthor: "Dirk YUL", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Plate_NewBrunswick_2016.jpg", creditLicense: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/" },
-      NL: { name: "Newfoundland and Labrador", plate: "Pitcher plant (2007–2025)", tag: "STANDARD", desc: "Newfoundland and Labrador's plate shows the pitcher plant, the provincial flower, beneath the serial, with the province's name in blue serif. A November 2025 revision kept the artwork but printed the name in black; this photo shows the 2007–2025 version.", agency: "Service NL", c: ["#ffffff", "#1c3f8f", "#7a2e8f"], photo: "assets/plates/canada/newfoundland-labrador.jpg", photoAlt: "Newfoundland and Labrador licence plate with pitcher plant, 2007 to 2025", creditAuthor: "Jaster909", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Newfoundland_%26_Labrador_2018_license_plate_-_CA1-550.jpg", creditLicense: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/" },
-      NS: { name: "Nova Scotia", plate: "Bluenose / Canada's Ocean Playground", tag: "STANDARD", desc: "Nova Scotia's plate screens the schooner Bluenose behind a blue serial, with “Canada's Ocean Playground” across the bottom. The 1989 artwork won Plate of the Year; the 2011 revision dropped the border lines and narrowed the dies.", agency: "Service Nova Scotia", c: ["#ffffff", "#1c4f9c", "#2f7fc1"], photo: "assets/plates/canada/nova-scotia.jpg", photoAlt: "Nova Scotia licence plate with the Bluenose schooner", creditAuthor: "Dirk YUL", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:1989_Nova_Scotia_license_plate_FRP_490_type_II.jpg", creditLicense: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/" },
-      NT: { name: "Northwest Territories", wiki: "the_Northwest_Territories", plate: "Spectacular (2010 design)", tag: "STANDARD", desc: "The Northwest Territories has issued polar-bear-shaped plates since 1970. The current version, from 2010, adds a treeline, a bear silhouette and “Spectacular” above the serial.", agency: "Government of the Northwest Territories", c: ["#e8f2fa", "#1c3f8f", "#3d8bc4"], photo: "assets/plates/canada/northwest-territories.jpg", photoAlt: "Northwest Territories bear-shaped licence plate with the Spectacular slogan", creditAuthor: "Walser123", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:1986_Northwest_Territories_license_plate_331758.jpg", creditLicense: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/" },
-      NU: { name: "Nunavut", plate: "Night scene (2012–2025)", tag: "STANDARD", desc: "Nunavut's 2012 plate put a polar bear, an inuksuk and northern lights on a rectangular base, with the territory's name in Inuktitut syllabics and English. In August 2025 the territory returned to a bear-shaped plate with a yellow border and an inuksuk separator; this photo shows the 2012–2025 design.", agency: "Government of Nunavut", c: ["#1b2a52", "#f4f7fb", "#8b5cf6"], photo: "assets/plates/canada/nunavut.jpg", photoAlt: "Nunavut licence plate with polar bear, inuksuk and northern lights, 2012 to 2025", creditAuthor: "Аз обичам шоколад", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Nunavut_License_Plate_from_2021.webp", creditLicense: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/" },
-      ON: { name: "Ontario", plate: "Yours to Discover", tag: "STANDARD", desc: "Ontario's blue-on-white plate puts a crown between the letter and number groups and “YOURS TO DISCOVER” along the bottom. The 2020 “A Place to Grow” redesign was pulled within weeks, so this 1997-era artwork remains the standard.", agency: "ServiceOntario", c: ["#ffffff", "#1c3f8f", "#c8102e"], photo: "assets/plates/canada/ontario.jpg", photoAlt: "Ontario licence plate with crown separator and Yours to Discover", creditAuthor: "Dillan Payne", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:2016_Ontario_License_Plate_CBPC-344.jpg", creditLicense: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/" },
-      PE: { name: "Prince Edward Island", plate: "Provincial crest (2022 design)", tag: "STANDARD", desc: "Prince Edward Island's 2022 base prints green letters on white, with the provincial crest as the serial separator and a small Canadian flag at the bottom left. A French-language “Île-du-Prince-Édouard” version is available on request.", agency: "PEI Department of Transportation", c: ["#ffffff", "#1c6b3a", "#c8102e"], photo: "assets/plates/canada/prince-edward-island.jpg", photoAlt: "Prince Edward Island licence plate with provincial crest, 2022 design", creditAuthor: "PEI Department of Transportation", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Prince_Edward_Island_sample_license_plate_(English_version),_post-2022_series.png", creditLicense: "Public domain", licenseUrl: "https://commons.wikimedia.org/wiki/File:Prince_Edward_Island_sample_license_plate_(English_version),_post-2022_series.png" },
-      QC: { name: "Quebec", plate: "Je me souviens (1983 design)", tag: "STANDARD", desc: "Quebec has used the same blue-on-white design since 1983: a fleur-de-lys and “Québec” above the serial, “Je me souviens” below. Only the serial format has changed, most recently to ABC 12D in September 2023.", agency: "SAAQ", c: ["#ffffff", "#1c3f8f", "#1c3f8f"], photo: "assets/plates/canada/quebec.jpg", photoAlt: "Quebec licence plate with fleur-de-lys and Je me souviens", creditAuthor: "Dillan Payne", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Quebec_License_Plate_X03_ECD.jpg", creditLicense: "CC BY-SA 2.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/" },
-      SK: { name: "Saskatchewan", plate: "Land of Living Skies", tag: "STANDARD", desc: "Saskatchewan's plate sets green serials on white with a wheat sheaf at the centre and “Land of Living Skies” across the bottom. It has been the standard since early 2009.", agency: "SGI", c: ["#ffffff", "#1c6b3a", "#d4a017"], photo: "assets/plates/canada/saskatchewan.jpg", photoAlt: "Saskatchewan licence plate with wheat sheaf and Land of Living Skies", creditAuthor: "Jerry “Woody”", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Saskatchewan_License_Plate_2011.jpg", creditLicense: "CC BY-SA 2.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/" },
-      YT: { name: "Yukon", plate: "The Klondike", tag: "STANDARD", desc: "Yukon's plate has paired a screened prospector with “The Klondike” since 1990, with the territory's name in red on a sky-blue band. Serials run ABC12 and skip the letters I, Q, U and Y.", agency: "Government of Yukon", c: ["#ffffff", "#1c3f8f", "#1c6ea4"], photo: "assets/plates/canada/yukon.jpg", photoAlt: "Yukon licence plate with prospector and The Klondike", creditAuthor: "Robinsoncrusoe", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:License_plate_Yukon_1998may.JPG", creditLicense: "Public domain", licenseUrl: "https://commons.wikimedia.org/wiki/File:License_plate_Yukon_1998may.JPG" },
+      AB: { name: "Alberta", pron: "al-BUR-tuh", plate: "Strong and Free (2026 design)", tag: "STANDARD", desc: "Alberta replaced its long-running “Wild Rose Country” base on 9 November 2026 with a photograph of Moraine Lake, a wild rose splitting the serial and “Strong and Free” along the bottom. Only rear plates are issued.", agency: "Service Alberta", c: ["#e8f0f4", "#1d3f6b", "#b62a37"], photo: "assets/plates/canada/alberta.jpg", photoAlt: "Alberta 2026 licence plate with Moraine Lake and the Strong and Free motto", creditAuthor: "Government of Alberta", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Licence-plate-moraine-lake-8.jpg", creditLicense: "OGL Canada 2.0", licenseUrl: "https://open.canada.ca/en/open-government-licence-canada" },
+      BC: { name: "British Columbia", pron: "BRIT-ish kuh-LUM-bee-uh", plate: "Beautiful British Columbia (2025 series)", tag: "STANDARD", desc: "British Columbia has carried “Beautiful British Columbia” beneath a stylized provincial flag since 1985. The August 2025 revision kept the artwork and switched to an A12 3BC serial, bringing the letters U, Y and Z back into use.", agency: "ICBC", c: ["#ffffff", "#173a6b", "#d21f2c"], photo: "assets/plates/canada/british-columbia.jpg", photoAlt: "British Columbia licence plate with the provincial flag and Beautiful British Columbia", creditAuthor: "LynxFromVancouver", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:BC_August_2025_License_Plate.jpg", creditLicense: "CC0", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/" },
+      MB: { name: "Manitoba", pron: "man-ih-TOH-buh", plate: "Friendly Manitoba", tag: "STANDARD", desc: "Manitoba's base, in use since late 2012, screens a river, a green treeline and a wheat field around the serial, with a black bison at the top right and “Friendly Manitoba” across the top. A French “Bienvenue” variant is issued as an alternative.", agency: "Manitoba Public Insurance", c: ["#ffffff", "#1f2f6b", "#0f7b5a"], photo: "assets/plates/canada/manitoba.jpg", photoAlt: "Manitoba Friendly Manitoba licence plate with bison and river scene", creditAuthor: "Jerry “Woody”", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Manitoba_License_Plate_2012.jpg", creditLicense: "CC BY-SA 2.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/" },
+      NB: { name: "New Brunswick", pron: "NOO BRUNZ-wik", plate: "Provincial wordmark (2011 design)", tag: "STANDARD", desc: "New Brunswick's 2011 base sets a red serial on white between gold and sky-blue curved bands, closed by the provincial wordmark. Only a rear plate is required.", agency: "Service New Brunswick", c: ["#ffffff", "#b3242b", "#1c6ea4"], photo: "assets/plates/canada/new-brunswick.jpg", photoAlt: "New Brunswick licence plate with gold and blue bands", creditAuthor: "Dirk YUL", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Plate_NewBrunswick_2016.jpg", creditLicense: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/" },
+      NL: { name: "Newfoundland and Labrador", pron: "NOO-fuhnd-land and LAB-ruh-dor", plate: "Pitcher plant (2007–2025)", tag: "STANDARD", desc: "Newfoundland and Labrador's plate shows the pitcher plant, the provincial flower, beneath the serial, with the province's name in blue serif. A November 2025 revision kept the artwork but printed the name in black; this photo shows the 2007–2025 version.", agency: "Service NL", c: ["#ffffff", "#1c3f8f", "#7a2e8f"], photo: "assets/plates/canada/newfoundland-labrador.jpg", photoAlt: "Newfoundland and Labrador licence plate with pitcher plant, 2007 to 2025", creditAuthor: "Jaster909", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Newfoundland_%26_Labrador_2018_license_plate_-_CA1-550.jpg", creditLicense: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/" },
+      NS: { name: "Nova Scotia", pron: "NOH-vuh SKOH-shuh", plate: "Bluenose / Canada's Ocean Playground", tag: "STANDARD", desc: "Nova Scotia's plate screens the schooner Bluenose behind a blue serial, with “Canada's Ocean Playground” across the bottom. The 1989 artwork won Plate of the Year; the 2011 revision dropped the border lines and narrowed the dies.", agency: "Service Nova Scotia", c: ["#ffffff", "#1c4f9c", "#2f7fc1"], photo: "assets/plates/canada/nova-scotia.jpg", photoAlt: "Nova Scotia licence plate with the Bluenose schooner", creditAuthor: "Dirk YUL", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:1989_Nova_Scotia_license_plate_FRP_490_type_II.jpg", creditLicense: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/" },
+      NT: { name: "Northwest Territories", pron: "north-WEST TER-uh-tor-eez", wiki: "the_Northwest_Territories", plate: "Spectacular (2010 design)", tag: "STANDARD", desc: "The Northwest Territories has issued polar-bear-shaped plates since 1970. The current version, from 2010, adds a treeline, a bear silhouette and “Spectacular” above the serial.", agency: "Government of the Northwest Territories", c: ["#e8f2fa", "#1c3f8f", "#3d8bc4"], photo: "assets/plates/canada/northwest-territories.jpg", photoAlt: "Northwest Territories bear-shaped licence plate with the Spectacular slogan", creditAuthor: "Walser123", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:1986_Northwest_Territories_license_plate_331758.jpg", creditLicense: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/" },
+      NU: { name: "Nunavut", pron: "NOO-nuh-voot", plate: "Night scene (2012–2025)", tag: "STANDARD", desc: "Nunavut's 2012 plate put a polar bear, an inuksuk and northern lights on a rectangular base, with the territory's name in Inuktitut syllabics and English. In August 2025 the territory returned to a bear-shaped plate with a yellow border and an inuksuk separator; this photo shows the 2012–2025 design.", agency: "Government of Nunavut", c: ["#1b2a52", "#f4f7fb", "#8b5cf6"], photo: "assets/plates/canada/nunavut.jpg", photoAlt: "Nunavut licence plate with polar bear, inuksuk and northern lights, 2012 to 2025", creditAuthor: "Аз обичам шоколад", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Nunavut_License_Plate_from_2021.webp", creditLicense: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/" },
+      ON: { name: "Ontario", pron: "on-TAIR-ee-oh", plate: "Yours to Discover", tag: "STANDARD", desc: "Ontario's blue-on-white plate puts a crown between the letter and number groups and “YOURS TO DISCOVER” along the bottom. The 2020 “A Place to Grow” redesign was pulled within weeks, so this 1997-era artwork remains the standard.", agency: "ServiceOntario", c: ["#ffffff", "#1c3f8f", "#c8102e"], photo: "assets/plates/canada/ontario.jpg", photoAlt: "Ontario licence plate with crown separator and Yours to Discover", creditAuthor: "Dillan Payne", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:2016_Ontario_License_Plate_CBPC-344.jpg", creditLicense: "CC BY-SA 4.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/" },
+      PE: { name: "Prince Edward Island", pron: "PRINS ED-werd EYE-luhnd", plate: "Provincial crest (2022 design)", tag: "STANDARD", desc: "Prince Edward Island's 2022 base prints green letters on white, with the provincial crest as the serial separator and a small Canadian flag at the bottom left. A French-language “Île-du-Prince-Édouard” version is available on request.", agency: "PEI Department of Transportation", c: ["#ffffff", "#1c6b3a", "#c8102e"], photo: "assets/plates/canada/prince-edward-island.jpg", photoAlt: "Prince Edward Island licence plate with provincial crest, 2022 design", creditAuthor: "PEI Department of Transportation", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Prince_Edward_Island_sample_license_plate_(English_version),_post-2022_series.png", creditLicense: "Public domain", licenseUrl: "https://commons.wikimedia.org/wiki/File:Prince_Edward_Island_sample_license_plate_(English_version),_post-2022_series.png" },
+      QC: { name: "Quebec", pron: "kwuh-BEK", plate: "Je me souviens (1983 design)", tag: "STANDARD", desc: "Quebec has used the same blue-on-white design since 1983: a fleur-de-lys and “Québec” above the serial, “Je me souviens” below. Only the serial format has changed, most recently to ABC 12D in September 2023.", agency: "SAAQ", c: ["#ffffff", "#1c3f8f", "#1c3f8f"], photo: "assets/plates/canada/quebec.jpg", photoAlt: "Quebec licence plate with fleur-de-lys and Je me souviens", creditAuthor: "Dillan Payne", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Quebec_License_Plate_X03_ECD.jpg", creditLicense: "CC BY-SA 2.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/" },
+      SK: { name: "Saskatchewan", pron: "suh-SKATCH-uh-wuhn", plate: "Land of Living Skies", tag: "STANDARD", desc: "Saskatchewan's plate sets green serials on white with a wheat sheaf at the centre and “Land of Living Skies” across the bottom. It has been the standard since early 2009.", agency: "SGI", c: ["#ffffff", "#1c6b3a", "#d4a017"], photo: "assets/plates/canada/saskatchewan.jpg", photoAlt: "Saskatchewan licence plate with wheat sheaf and Land of Living Skies", creditAuthor: "Jerry “Woody”", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:Saskatchewan_License_Plate_2011.jpg", creditLicense: "CC BY-SA 2.0", licenseUrl: "https://creativecommons.org/licenses/by-sa/2.0/" },
+      YT: { name: "Yukon", pron: "YOO-kon", plate: "The Klondike", tag: "STANDARD", desc: "Yukon's plate has paired a screened prospector with “The Klondike” since 1990, with the territory's name in red on a sky-blue band. Serials run ABC12 and skip the letters I, Q, U and Y.", agency: "Government of Yukon", c: ["#ffffff", "#1c3f8f", "#1c6ea4"], photo: "assets/plates/canada/yukon.jpg", photoAlt: "Yukon licence plate with prospector and The Klondike", creditAuthor: "Robinsoncrusoe", creditSource: "Wikimedia Commons", creditUrl: "https://commons.wikimedia.org/wiki/File:License_plate_Yukon_1998may.JPG", creditLicense: "Public domain", licenseUrl: "https://commons.wikimedia.org/wiki/File:License_plate_Yukon_1998may.JPG" },
     };
 
     const svg = document.getElementById("caMap");
@@ -311,14 +331,62 @@
       return "https://en.wikipedia.org/wiki/Vehicle_registration_plates_of_" + slug;
     }
 
+    const speakBtn = el("speakBtn");
+    const canSpeak = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+    let activeUtterance = null;
+
+    function setSpeakUI(on) {
+      if (!canSpeak || !current) return;
+      const name = PROVINCES[current].name;
+      speakBtn.hidden = false;
+      speakBtn.querySelector(".speak-text").textContent = on ? "Stop" : "Listen";
+      speakBtn.setAttribute("aria-label", on ? "Stop pronunciation of " + name : "Hear " + name + " pronounced in English");
+      speakBtn.classList.toggle("speaking", on);
+    }
+
+    function stopSpeech() {
+      activeUtterance = null;
+      if (canSpeak) window.speechSynthesis.cancel();
+      setSpeakUI(false);
+    }
+
+    function englishVoice() {
+      const voices = window.speechSynthesis.getVoices() || [];
+      return voices.find((v) => v.lang.toLowerCase() === "en-ca")
+        || voices.find((v) => v.lang.toLowerCase() === "en-us")
+        || voices.find((v) => v.lang.toLowerCase().startsWith("en"))
+        || null;
+    }
+
+    function toggleSpeech() {
+      if (!canSpeak || !current) return;
+      if (activeUtterance) { stopSpeech(); return; }
+      stopSpeech();
+      const u = new SpeechSynthesisUtterance(PROVINCES[current].name);
+      u.lang = "en-CA";
+      const voice = englishVoice();
+      if (voice) u.voice = voice;
+      u.rate = 0.9;
+      u.onend = u.onerror = () => {
+        if (activeUtterance === u) { activeUtterance = null; setSpeakUI(false); }
+      };
+      activeUtterance = u;
+      setSpeakUI(true);
+      window.speechSynthesis.speak(u);
+    }
+
     function render(abbr) {
       if (!abbr || !PROVINCES[abbr]) return;
       const s = PROVINCES[abbr];
+      if (current && current !== abbr) stopSpeech();
       current = abbr;
       paths.forEach((p) => p.classList.toggle("active", p.dataset.abbr === abbr));
 
       el("dAbbr").textContent = abbr;
       el("dName").textContent = s.name;
+      el("dPron").textContent = s.pron;
+      el("dPron").hidden = false;
+      if (!activeUtterance) setSpeakUI(false);
       el("dLabel").textContent = "Standard passenger plate";
       el("dDesc").textContent = s.desc;
       el("dDesc").classList.remove("placeholder");
@@ -379,7 +447,7 @@
     }
 
     function showTooltip(e, abbr) {
-      tooltip.innerHTML = "<strong>" + PROVINCES[abbr].name + "</strong> · " + PROVINCES[abbr].plate;
+      tooltip.innerHTML = "<strong>" + PROVINCES[abbr].name + '</strong> <span class="pron">' + PROVINCES[abbr].pron + "</span> · " + PROVINCES[abbr].plate;
       tooltip.hidden = false;
       moveTooltip(e);
     }
@@ -427,7 +495,7 @@
       matches.forEach((k) => {
         const b = document.createElement("button");
         b.type = "button";
-        b.innerHTML = '<span class="code">' + k + "</span>" + PROVINCES[k].name;
+        b.innerHTML = '<span class="code">' + k + "</span>" + PROVINCES[k].name + ' <span class="pron">' + PROVINCES[k].pron + "</span>";
         b.addEventListener("click", () => select(k));
         results.appendChild(b);
       });
@@ -442,12 +510,16 @@
       if (e.key === "Escape") { results.hidden = true; clearHighlights(); }
     });
 
+    speakBtn.addEventListener("click", toggleSpeech);
+    if (!canSpeak) speakBtn.hidden = true;
+
     el("randomBtn").addEventListener("click", () => {
       const keys = Object.keys(PROVINCES);
       select(keys[Math.floor(Math.random() * keys.length)]);
     });
 
     el("clearBtn").addEventListener("click", () => {
+      stopSpeech();
       pinned = null;
       current = null;
       paths.forEach((p) => p.classList.remove("active"));
@@ -457,6 +529,8 @@
       results.hidden = true;
       el("dAbbr").textContent = "—";
       el("dName").textContent = "Pick a province";
+      el("dPron").hidden = true;
+      speakBtn.hidden = true;
       el("plateState").textContent = "YOUR PROVINCE";
       el("plateTag").textContent = "STANDARD ISSUE";
       el("plateFoot").textContent = "SAMPLE SERIAL";
