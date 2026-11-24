@@ -95,6 +95,53 @@
 
     .board-wrap { position: relative; width: 100%; max-width: 420px; }
     .main-col { display: flex; flex-direction: column; gap: 0.9rem; min-width: 0; }
+    .emoji-strip {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      padding: 0.4rem 0.6rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 2.2rem;
+    }
+    .emoji-strip .strip-title {
+      color: var(--muted);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-right: 0.25rem;
+    }
+    .emoji-strip .chips {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      flex: 1 1 auto;
+    }
+    .emoji-strip .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.95rem;
+      line-height: 1;
+    }
+    .emoji-strip .chip .n {
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .emoji-strip .strip-total {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-variant-numeric: tabular-nums;
+      margin-left: auto;
+    }
 
     .game {
       background: var(--surface);
@@ -314,6 +361,11 @@
   <div class="board-wrap">
     <section class="game" id="game" aria-label="Math game">
       <div class="main-col">
+        <div class="emoji-strip" id="emojiStrip" hidden>
+          <span class="strip-title">Collected</span>
+          <span class="chips" id="emojiChips"></span>
+          <span class="strip-total" id="emojiTotal">0</span>
+        </div>
         <div class="question" id="question" aria-live="polite">&#8212; + &#8212; = ?</div>
 
         <div class="answer-row">
@@ -381,6 +433,9 @@
     const workStepsEl = document.getElementById('workSteps');
     const workLineEl = document.getElementById('workLine');
     const workSummaryEl = document.getElementById('workSummary');
+    const emojiStripEl = document.getElementById('emojiStrip');
+    const emojiChipsEl = document.getElementById('emojiChips');
+    const emojiTotalEl = document.getElementById('emojiTotal');
     const nextBtn = document.getElementById('nextBtn');
     const numpadEl = document.getElementById('numpad');
     const clearBtn = document.getElementById('clearBtn');
@@ -408,6 +463,8 @@
     let timerId = null;
     let vertical = false;
     let showingWork = false;
+    let collectedEmojis = {};
+    let collectedTotal = 0;
 
     function updateHud() {
       scoreEl.textContent = score;
@@ -699,13 +756,39 @@
     const priorityEmojis = ['🦈', '🦖', '🎆'];
     const funEmojis = ['🎉', '⭐', '🏆', '🚀', '💥', '🔥', '😎', '🥳', '✨', '💯', '🌟', '🍕', '🌈', '⚡'];
 
+    function renderCollected() {
+      if (collectedTotal === 0) {
+        emojiStripEl.hidden = true;
+        return;
+      }
+      emojiStripEl.hidden = false;
+      emojiChipsEl.innerHTML = '';
+      Object.keys(collectedEmojis).forEach((emo) => {
+        const chip = document.createElement('span');
+        chip.className = 'chip';
+        chip.textContent = emo;
+        const n = document.createElement('span');
+        n.className = 'n';
+        n.textContent = '\u00D7' + collectedEmojis[emo];
+        chip.appendChild(n);
+        emojiChipsEl.appendChild(chip);
+      });
+      emojiTotalEl.textContent = collectedTotal;
+    }
+
     function correctMessage() {
       const pool = Math.random() < 0.6 ? priorityEmojis : funEmojis;
       const first = pool[Math.floor(Math.random() * pool.length)];
+      collectedEmojis[first] = (collectedEmojis[first] || 0) + 1;
+      collectedTotal++;
       let message = 'Correct! +1 point ' + first;
       if (Math.random() < 0.35) {
-        message += ' ' + funEmojis[Math.floor(Math.random() * funEmojis.length)];
+        const second = funEmojis[Math.floor(Math.random() * funEmojis.length)];
+        message += ' ' + second;
+        collectedEmojis[second] = (collectedEmojis[second] || 0) + 1;
+        collectedTotal++;
       }
+      renderCollected();
       return message;
     }
 
@@ -726,6 +809,9 @@
     function start() {
       setWorkVisible(false);
       score = 0;
+      collectedEmojis = {};
+      collectedTotal = 0;
+      renderCollected();
       secondsLeft = roundSeconds;
       running = true;
       clearAnswer();
