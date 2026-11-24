@@ -268,13 +268,9 @@
       .game { flex-direction: row; align-items: flex-start; gap: 1.25rem; padding: 1rem 1.25rem; }
       .main-col { flex: 1 1 0; gap: 0.6rem; }
       .work {
-        flex: 0 0 294px;
-        max-width: 294px;
-        border-top: none;
-        border-left: 1px solid var(--border);
-        padding-top: 0;
-        padding-left: 1.25rem;
-        padding-right: 0;
+        border-top: 1px solid var(--border);
+        padding-top: 0.9rem;
+        padding-left: 0;
       }
       .question { font-size: 2rem; padding: 0.2rem 0; }
       .answer { min-height: 2.6rem; font-size: 1.4rem; }
@@ -341,19 +337,19 @@
           <button type="button" data-key="0" class="wide" aria-label="Digit 0">0</button>
           <button type="button" class="fn" data-key="back" aria-label="Backspace">&#9003;</button>
         </div>
-      </div>
 
-      <div class="work" id="work" hidden>
-        <div>
-          <h3>Break apart</h3>
-          <div class="steps" id="workSteps"></div>
+        <div class="work" id="work" hidden>
+          <button type="button" id="nextBtn" class="primary next">Next question</button>
+          <div>
+            <h3>Break apart</h3>
+            <div class="steps" id="workSteps"></div>
+          </div>
+          <div>
+            <h3>Number line</h3>
+            <div class="number-line" id="workLine"></div>
+            <div class="work-summary" id="workSummary"></div>
+          </div>
         </div>
-        <div>
-          <h3>Number line</h3>
-          <div class="number-line" id="workLine"></div>
-          <div class="work-summary" id="workSummary"></div>
-        </div>
-        <button type="button" id="nextBtn" class="primary next">Next question</button>
       </div>
     </section>
 
@@ -679,6 +675,8 @@
       showingWork = visible;
       workEl.hidden = !visible;
       checkBtn.disabled = visible;
+      numpadEl.hidden = visible;
+      clearBtn.hidden = visible;
       numpadEl.querySelectorAll('button').forEach((b) => { b.disabled = visible; });
       clearBtn.disabled = visible;
     }
