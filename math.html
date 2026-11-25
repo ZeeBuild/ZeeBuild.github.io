@@ -36,11 +36,22 @@
       padding: 1.5rem;
     }
 
-    .brand { text-decoration: none; color: var(--text); font-weight: 700; font-size: 1.1rem; }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      backdrop-filter: blur(8px);
+      width: 100%;
+    }
+    .brand { font-weight: 700; font-size: 1.15rem; color: var(--text); text-decoration: none; }
     .brand span { color: var(--accent); }
-    .game-nav { display: flex; gap: 1.25rem; flex-wrap: wrap; justify-content: center; }
-    .game-nav a { color: var(--muted); text-decoration: none; font-size: 0.95rem; }
-    .game-nav a:hover { color: var(--text); }
+    .nav nav a { color: var(--muted); text-decoration: none; margin-left: 1.25rem; font-size: 0.95rem; }
+    .nav nav a:hover { color: var(--text); }
 
     .hud {
       display: flex;
@@ -325,15 +336,17 @@
   </style>
 </head>
 <body>
-  <a class="brand" href="index.html">Zee<span> Site</span> / Math</a>
-  <nav class="game-nav">
-    <a href="index.html#features">Features</a>
-    <a href="snake.html">Snake</a>
-    <a href="plates.html">Plates</a>
-    <a href="plates-canada.html">Canada</a>
-    <a href="math.html">Math</a>
-    <a href="https://github.com/ZeeBuild/ZeeBuild.github.io">GitHub</a>
-  </nav>
+  <header class="nav">
+    <a class="brand" href="index.html">Zee<span> Site</span></a>
+    <nav>
+      <a href="index.html#features">Features</a>
+      <a href="snake.html">Snake</a>
+      <a href="plates.html">Plates</a>
+      <a href="plates-canada.html">Canada</a>
+      <a href="math.html">Math</a>
+      <a href="https://github.com/ZeeBuild/ZeeBuild.github.io">GitHub</a>
+    </nav>
+  </header>
 
   <div class="hud">
     <div><div class="label">Score</div><div class="value" id="score">0</div></div>
