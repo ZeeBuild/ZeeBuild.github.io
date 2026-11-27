@@ -94,7 +94,6 @@
       <a class="wordmark" href="trivia.html"><span class="wordmark-dot" aria-hidden="true"></span>Trivia</a>
       <nav class="head-nav" aria-label="Trivia">
         <a href="trivia.html#decks">All decks</a>
-        <a href="trivia.html#how">How to play</a>
         <a href="index.html">Zee Site</a>
       </nav>
     </div>
@@ -105,11 +104,6 @@
       <a class="back" href="trivia.html">All decks</a>
       <p class="deck-meta">Transportation deck, 17 vehicles planned</p>
     </div>
-
-    <header class="deck-head">
-      <h1>Wheels &amp; Wings</h1>
-      <p>Planes, buses, trains and ships. Draw a card, ask up to ten yes-or-no questions, and name the vehicle.</p>
-    </header>
 
     <div class="stage">
       <div class="card-stage">
@@ -136,7 +130,13 @@
                   <li class="is-rail"><span class="mode-pip" aria-hidden="true"></span>Rail</li>
                   <li class="is-water"><span class="mode-pip" aria-hidden="true"></span>Water</li>
                 </ul>
-                <p class="back-note">Ask ten yes-or-no questions, then name the vehicle.</p>
+                <p class="back-desc">Planes, buses, trains and ships. Guess the hidden vehicle.</p>
+                <ol class="back-steps">
+                  <li>Read two buzz-words.</li>
+                  <li>Ask up to ten yes-or-no questions.</li>
+                  <li>Use clues or facts if stuck, then name the vehicle.</li>
+                </ol>
+                <p class="back-win">First to seven cards wins.</p>
               </div>
 
               <p class="back-hint">
@@ -225,39 +225,11 @@
 
       <aside class="panel" aria-label="Game controls">
         <section class="panel-block">
-          <h2>Questions</h2>
-          <p class="counter-read"><strong id="askedCount">0</strong> of 10 asked</p>
-          <div class="ten" role="group" aria-label="Ten-question counter">
-            <button class="stop-btn" type="button" data-stop aria-label="Mark question 1 asked" aria-pressed="false">1</button>
-            <button class="stop-btn" type="button" data-stop aria-label="Mark question 2 asked" aria-pressed="false">2</button>
-            <button class="stop-btn" type="button" data-stop aria-label="Mark question 3 asked" aria-pressed="false">3</button>
-            <button class="stop-btn" type="button" data-stop aria-label="Mark question 4 asked" aria-pressed="false">4</button>
-            <button class="stop-btn" type="button" data-stop aria-label="Mark question 5 asked" aria-pressed="false">5</button>
-            <button class="stop-btn" type="button" data-stop aria-label="Mark question 6 asked" aria-pressed="false">6</button>
-            <button class="stop-btn" type="button" data-stop aria-label="Mark question 7 asked" aria-pressed="false">7</button>
-            <button class="stop-btn" type="button" data-stop aria-label="Mark question 8 asked" aria-pressed="false">8</button>
-            <button class="stop-btn" type="button" data-stop aria-label="Mark question 9 asked" aria-pressed="false">9</button>
-            <button class="stop-btn" type="button" data-stop aria-label="Mark question 10 asked" aria-pressed="false">10</button>
-          </div>
-          <button class="link-btn" id="resetCounter" type="button">Reset counter</button>
-        </section>
-
-        <section class="panel-block">
           <button class="btn btn--signal btn--block" id="drawCard" type="button">Draw another card</button>
           <p class="panel-note">One card is in this deck so far, so drawing again brings back the same vehicle.</p>
         </section>
-
-        <details class="panel-block">
-          <summary>How to play</summary>
-          <p>One player holds the screen and reads the first two buzz-words. Everyone else asks yes-or-no questions and taps a stop for each one. Use the three clues or six facts if the table gets stuck. Guess the vehicle to keep the card, then try the bonus question. First to seven cards wins.</p>
-        </details>
       </aside>
     </div>
-
-    <details class="credits">
-      <summary>Photo credits</summary>
-      <p id="creditLine">Photo: <a href="https://unsplash.com/photos/white-airplane-on-mid-air-8KLLgqHMAv4">White airplane on mid air</a> by John McArthur, licensed <a href="https://unsplash.com/license">Unsplash License</a>, via Unsplash. Cropped and resized for this card.</p>
-    </details>
 
     <p class="visually-hidden" id="status" role="status" aria-live="polite"></p>
   </main>
@@ -280,14 +252,7 @@
           modeLabel: "Air",
           photo: {
             src: "https://images.unsplash.com/photo-1566827371384-24bf42497a19?auto=format&fit=crop&w=960&q=80",
-            alt: "A white passenger airplane flying through the sky.",
-            creditName: "White airplane on mid air",
-            creditUrl: "https://unsplash.com/photos/white-airplane-on-mid-air-8KLLgqHMAv4",
-            author: "John McArthur",
-            license: "Unsplash License",
-            licenseUrl: "https://unsplash.com/license",
-            source: "Unsplash",
-            creditNote: "Cropped and resized for this card."
+            alt: "A white passenger airplane flying through the sky."
           },
           buzz: ["fast", "wings", "travel"],
           facts: [
@@ -313,8 +278,6 @@
       var flipBtn = document.getElementById("flipCard");
       var flipHint = document.getElementById("flipHint");
       var drawBtn = document.getElementById("drawCard");
-      var resetBtn = document.getElementById("resetCounter");
-      var askedCount = document.getElementById("askedCount");
       var backCount = document.getElementById("backCount");
       var status = document.getElementById("status");
       var photoEl = document.getElementById("cardPhoto");
@@ -323,11 +286,8 @@
       var factsEl = document.getElementById("cardFacts");
       var cluesEl = document.getElementById("cardClues");
       var bonusEl = document.getElementById("cardBonus");
-      var creditEl = document.getElementById("creditLine");
-      var stopButtons = Array.prototype.slice.call(document.querySelectorAll("[data-stop]"));
 
       var flipped = false;
-      var asked = 0;
 
       function shuffle(list) {
         var out = list.slice();
@@ -374,25 +334,6 @@
         backFace.setAttribute("aria-hidden", flipped ? "true" : "false");
       }
 
-      function renderCredit(photo) {
-        creditEl.replaceChildren();
-        if (!photo.creditUrl) {
-          creditEl.textContent = photo.creditName;
-          return;
-        }
-        creditEl.append("Photo: ");
-        var creditLink = document.createElement("a");
-        creditLink.href = photo.creditUrl;
-        creditLink.textContent = photo.creditName;
-        creditEl.append(creditLink, " by " + photo.author + ", licensed ");
-        var licenseLink = document.createElement("a");
-        licenseLink.href = photo.licenseUrl;
-        licenseLink.textContent = photo.license;
-        var source = photo.source || "Wikimedia Commons";
-        var note = photo.creditNote || "Resized by Wikimedia's thumbnail service.";
-        creditEl.append(licenseLink, ", via " + source + ". " + note);
-      }
-
       function renderCard(card) {
         cardEl.dataset.mode = card.mode;
         titleEl.textContent = card.title;
@@ -433,16 +374,6 @@
         });
 
         bonusEl.textContent = card.bonus;
-        renderCredit(card.photo);
-      }
-
-      function paintCounter() {
-        stopButtons.forEach(function (button, index) {
-          var on = index < asked;
-          button.classList.toggle("is-asked", on);
-          button.setAttribute("aria-pressed", on ? "true" : "false");
-        });
-        askedCount.textContent = String(asked);
       }
 
       var deck = makeDeck(CARDS);
@@ -450,7 +381,6 @@
 
       renderCard(current);
       backCount.textContent = deck.size === 1 ? "1 card" : deck.size + " cards";
-      paintCounter();
       setFlipped(false);
 
       cardEl.addEventListener("click", function () {
@@ -464,23 +394,8 @@
       drawBtn.addEventListener("click", function () {
         current = deck.next();
         renderCard(current);
-        asked = 0;
-        paintCounter();
         setFlipped(true);
         announce("Drew " + current.title + ".");
-      });
-
-      stopButtons.forEach(function (button, index) {
-        button.addEventListener("click", function () {
-          asked = asked === index + 1 ? index : index + 1;
-          paintCounter();
-        });
-      });
-
-      resetBtn.addEventListener("click", function () {
-        asked = 0;
-        paintCounter();
-        announce("Counter reset.");
       });
     }());
   </script>
