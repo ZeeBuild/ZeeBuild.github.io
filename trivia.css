@@ -159,10 +159,6 @@ a:hover {
   color: var(--paper);
 }
 
-.btn--block {
-  width: 100%;
-}
-
 /* Hub hero */
 
 .hero {
@@ -491,10 +487,6 @@ a.deck-row:focus-visible .deck-name {
 /* Card stage */
 
 .stage {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 330px;
-  gap: 48px;
-  align-items: start;
   padding: 28px 0 64px;
 }
 
@@ -638,13 +630,6 @@ a.deck-row:focus-visible .deck-name {
 
 .back-steps li + li {
   margin-top: 6px;
-}
-
-.back-win {
-  margin: 12px 0 0;
-  color: var(--amber);
-  font-size: 0.82rem;
-  font-weight: 700;
 }
 
 .mode-pip {
@@ -922,22 +907,6 @@ a.deck-row:focus-visible .deck-name {
   font-size: 0.9rem;
 }
 
-/* Deck side panel */
-
-.panel {
-  display: grid;
-  gap: 22px;
-  align-content: start;
-  padding-top: 16px;
-  border-top: 3px solid var(--ink);
-}
-
-.panel-note {
-  margin: 10px 0 0;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
 /* Responsive */
 
 @media (max-width: 900px) {
@@ -947,16 +916,6 @@ a.deck-row:focus-visible .deck-name {
     padding: 48px 0 40px;
   }
 
-  .stage {
-    grid-template-columns: 1fr;
-    gap: 34px;
-  }
-
-  .panel {
-    width: 100%;
-    max-width: 460px;
-    margin: 0 auto;
-  }
 }
 
 @media (max-width: 760px) {

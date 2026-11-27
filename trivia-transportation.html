@@ -136,7 +136,6 @@
                   <li>Ask up to ten yes-or-no questions.</li>
                   <li>Use clues or facts if stuck, then name the vehicle.</li>
                 </ol>
-                <p class="back-win">First to seven cards wins.</p>
               </div>
 
               <p class="back-hint">
@@ -214,7 +213,7 @@
         </div>
 
         <div class="card-controls">
-          <button class="btn btn--quiet" id="flipCard" type="button" aria-pressed="false">Flip card</button>
+          <button class="btn btn--signal" id="drawCard" type="button">Draw another card</button>
           <p class="flip-hint" id="flipHint">Tap the card to flip.</p>
         </div>
 
@@ -222,13 +221,6 @@
           <p class="noscript">This card needs JavaScript to flip. The vehicle on the other side is still printed in the page source.</p>
         </noscript>
       </div>
-
-      <aside class="panel" aria-label="Game controls">
-        <section class="panel-block">
-          <button class="btn btn--signal btn--block" id="drawCard" type="button">Draw another card</button>
-          <p class="panel-note">One card is in this deck so far, so drawing again brings back the same vehicle.</p>
-        </section>
-      </aside>
     </div>
 
     <p class="visually-hidden" id="status" role="status" aria-live="polite"></p>
@@ -275,7 +267,6 @@
       var cardEl = document.getElementById("card");
       var frontFace = document.getElementById("cardFront");
       var backFace = document.getElementById("cardBack");
-      var flipBtn = document.getElementById("flipCard");
       var flipHint = document.getElementById("flipHint");
       var drawBtn = document.getElementById("drawCard");
       var backCount = document.getElementById("backCount");
@@ -327,8 +318,6 @@
       function setFlipped(next) {
         flipped = next;
         cardEl.classList.toggle("is-flipped", flipped);
-        flipBtn.textContent = flipped ? "Flip back" : "Flip card";
-        flipBtn.setAttribute("aria-pressed", flipped ? "true" : "false");
         flipHint.textContent = flipped ? "Tap the card to flip back." : "Tap the card to flip.";
         frontFace.setAttribute("aria-hidden", flipped ? "false" : "true");
         backFace.setAttribute("aria-hidden", flipped ? "true" : "false");
@@ -384,10 +373,6 @@
       setFlipped(false);
 
       cardEl.addEventListener("click", function () {
-        setFlipped(!flipped);
-      });
-
-      flipBtn.addEventListener("click", function () {
         setFlipped(!flipped);
       });
 
