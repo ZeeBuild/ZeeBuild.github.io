@@ -645,7 +645,7 @@ a.deck-row:focus-visible .deck-name {
   position: absolute;
   top: 12px;
   left: 50%;
-  max-width: 84%;
+  max-width: 94%;
   margin: 0;
   padding: 4px 16px 5px;
   transform: translateX(-50%);
@@ -660,7 +660,7 @@ a.deck-row:focus-visible .deck-name {
   letter-spacing: 0.01em;
   text-align: center;
   text-transform: uppercase;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 
 .buzz-bar {
