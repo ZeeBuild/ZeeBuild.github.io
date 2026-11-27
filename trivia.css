@@ -462,28 +462,6 @@ a.deck-row:focus-visible .deck-name {
   color: var(--ink);
 }
 
-/* Deck page header */
-
-.deck-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px 24px;
-  padding: 26px 0 0;
-  color: var(--muted);
-  font-size: 0.92rem;
-}
-
-.deck-bar .back {
-  color: var(--ink);
-  font-weight: 700;
-}
-
-.deck-meta {
-  margin: 0;
-}
-
 /* Card stage */
 
 .stage {
@@ -683,7 +661,7 @@ a.deck-row:focus-visible .deck-name {
   background: var(--mode);
   color: var(--on-mode);
   font-family: var(--font-display);
-  font-size: clamp(1.35rem, 4.6vw, 1.95rem);
+  font-size: clamp(1.5rem, 4.8vw, 2.1rem);
   font-weight: 800;
   line-height: 1;
   letter-spacing: 0.01em;
@@ -707,7 +685,7 @@ a.deck-row:focus-visible .deck-name {
 .buzz-label {
   flex: none;
   color: #fff;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 1.05;
   text-align: center;
@@ -727,7 +705,7 @@ a.deck-row:focus-visible .deck-name {
   border-radius: 999px;
   background: #fff;
   color: var(--mode-ink);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 700;
   line-height: 1.3;
 }
@@ -754,14 +732,14 @@ a.deck-row:focus-visible .deck-name {
   background: var(--mode);
   color: var(--on-mode);
   font-family: var(--font-text);
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   font-weight: 700;
   line-height: 1.2;
 }
 
 .clues ol {
   display: grid;
-  gap: 8px;
+  gap: 14px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -770,9 +748,9 @@ a.deck-row:focus-visible .deck-name {
 
 .clues li {
   position: relative;
-  padding-left: 25px;
-  font-size: 0.76rem;
-  line-height: 1.3;
+  padding-left: 28px;
+  font-size: 0.9rem;
+  line-height: 1.4;
   counter-increment: clue;
 }
 
@@ -782,13 +760,13 @@ a.deck-row:focus-visible .deck-name {
   top: 0;
   left: 0;
   display: grid;
-  width: 18px;
-  height: 18px;
+  width: 21px;
+  height: 21px;
   place-items: center;
   border-radius: 50%;
   background: var(--mode);
   color: var(--on-mode);
-  font-size: 0.64rem;
+  font-size: 0.76rem;
   font-weight: 700;
 }
 
@@ -841,20 +819,21 @@ a.deck-row:focus-visible .deck-name {
   filter: drop-shadow(0 1px 0 rgb(16 35 46 / 12%));
 }
 
-.fact dd {
+.fact dt {
   order: 1;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.fact dd {
+  order: 2;
   margin: 0;
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   font-weight: 700;
   line-height: 1.2;
   overflow-wrap: anywhere;
-}
-
-.fact dt {
-  order: 2;
-  color: var(--muted);
-  font-size: 0.58rem;
-  line-height: 1.15;
 }
 
 .bonus {
@@ -865,7 +844,7 @@ a.deck-row:focus-visible .deck-name {
   padding: 9px 12px;
   background: color-mix(in srgb, var(--mode) 45%, var(--ink));
   color: #fff;
-  font-size: 0.76rem;
+  font-size: 0.86rem;
   line-height: 1.35;
 }
 
@@ -875,7 +854,7 @@ a.deck-row:focus-visible .deck-name {
   border-radius: 999px;
   background: var(--amber);
   color: var(--ink);
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   font-weight: 800;
   line-height: 1.25;
   text-transform: uppercase;
@@ -1001,29 +980,29 @@ a.deck-row:focus-visible .deck-name {
   }
 
   .fact dd {
-    font-size: 0.62rem;
+    font-size: 0.72rem;
   }
 
   .fact dt {
-    font-size: 0.5rem;
+    font-size: 0.62rem;
   }
 
   .clues li {
-    padding-left: 23px;
-    font-size: 0.75rem;
+    padding-left: 26px;
+    font-size: 0.82rem;
   }
 
   .clues li::before {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
   }
 
   .buzz li {
-    font-size: 0.68rem;
+    font-size: 0.76rem;
   }
 
   .bonus {
-    font-size: 0.72rem;
+    font-size: 0.8rem;
   }
 
   .hero h1 {
