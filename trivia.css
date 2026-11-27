@@ -737,8 +737,15 @@ a.deck-row:focus-visible .deck-name {
   line-height: 1.2;
 }
 
+.clues {
+  display: flex;
+  flex-direction: column;
+}
+
 .clues ol {
   display: grid;
+  flex: 1;
+  align-content: space-between;
   gap: 14px;
   margin: 0;
   padding: 0;
