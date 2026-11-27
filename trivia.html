@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Trivia is a family guessing game. Draw a card, ask ten yes-or-no questions, and name what is hiding." />
+  <title>Trivia — a ten-question guessing game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="trivia.css" />
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap">
+      <a class="wordmark" href="trivia.html"><span class="wordmark-dot" aria-hidden="true"></span>Trivia</a>
+      <nav class="head-nav" aria-label="Trivia">
+        <a href="#decks">Decks</a>
+        <a href="#how">How to play</a>
+        <a href="index.html">Zee Site</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <h1>Ten questions. One answer.</h1>
+        <p class="lede">Draw a card, ask yes-or-no questions, and name what is hiding. A guessing game for readers aged 8 and up, played with one screen and any number of players.</p>
+        <div class="hero-actions">
+          <a class="btn btn--signal" href="trivia-transportation.html">Open Wheels &amp; Wings</a>
+          <a class="btn btn--quiet" href="#how">How to play</a>
+        </div>
+      </div>
+
+      <aside class="mode-board" aria-label="Vehicles planned for the first deck">
+        <p class="mode-board-title">Planned for the first deck</p>
+        <ul>
+          <li class="is-air">
+            <span class="mode-name">Air</span>
+            <span class="mode-example">Airplane, helicopter, hot air balloon</span>
+            <span class="mode-count">3</span>
+          </li>
+          <li class="is-road">
+            <span class="mode-name">Road</span>
+            <span class="mode-example">Car, bus, fire truck, bicycle, motorcycle, tractor</span>
+            <span class="mode-count">6</span>
+          </li>
+          <li class="is-rail">
+            <span class="mode-name">Rail</span>
+            <span class="mode-example">Passenger train, subway train, freight train</span>
+            <span class="mode-count">3</span>
+          </li>
+          <li class="is-water">
+            <span class="mode-name">Water</span>
+            <span class="mode-example">Cargo ship, speedboat, sailboat, submarine, tugboat</span>
+            <span class="mode-count">5</span>
+          </li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="section" id="decks">
+      <div class="section-head">
+        <h2>Decks</h2>
+        <p>One ready. Three on the way.</p>
+      </div>
+
+      <ol class="route">
+        <li class="stop is-live">
+          <a class="deck-row" href="trivia-transportation.html">
+            <span class="deck-name">Wheels &amp; Wings</span>
+            <span class="deck-desc">Planes, buses, trains and ships. One card is ready to flip, and 17 vehicles are planned.</span>
+            <span class="chips" aria-label="Modes in this deck">
+              <span class="chip is-air">Air</span>
+              <span class="chip is-road">Road</span>
+              <span class="chip is-rail">Rail</span>
+              <span class="chip is-water">Water</span>
+            </span>
+          </a>
+        </li>
+        <li class="stop is-soon">
+          <div class="deck-row">
+            <span class="deck-name">Animals</span>
+            <span class="deck-desc">Coming soon.</span>
+          </div>
+        </li>
+        <li class="stop is-soon">
+          <div class="deck-row">
+            <span class="deck-name">Food</span>
+            <span class="deck-desc">Coming soon.</span>
+          </div>
+        </li>
+        <li class="stop is-soon">
+          <div class="deck-row">
+            <span class="deck-name">Space</span>
+            <span class="deck-desc">Coming soon.</span>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="section" id="how">
+      <div class="section-head">
+        <h2>How to play</h2>
+        <p>Two minutes to learn.</p>
+      </div>
+
+      <ol class="steps">
+        <li>
+          <span class="step-num" aria-hidden="true">1</span>
+          <h3>Draw a card</h3>
+          <p>One player flips a card and keeps the screen to themselves. They read the first two buzz-words out loud.</p>
+        </li>
+        <li>
+          <span class="step-num" aria-hidden="true">2</span>
+          <h3>Ask ten questions</h3>
+          <p>Everyone else asks yes-or-no questions. Tap a stop on the counter for each one. The card shows three clues and six facts if the table gets stuck.</p>
+        </li>
+        <li>
+          <span class="step-num" aria-hidden="true">3</span>
+          <h3>Try the bonus</h3>
+          <p>Name the answer to keep the card, then take the bonus question for a head start on the next one. First to seven cards wins.</p>
+        </li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      <p>Trivia is a family guessing game for readers aged 8 and up. Card photos come from Unsplash and Wikimedia Commons, and are credited on each deck page.</p>
+      <p><a href="index.html">Zee Site</a></p>
+    </div>
+  </footer>
+</body>
+</html>

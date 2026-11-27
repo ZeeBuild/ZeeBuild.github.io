@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Wheels & Wings is the transportation deck for Trivia. Draw a card, ask ten yes-or-no questions, and name the vehicle." />
+  <title>Wheels &amp; Wings — Trivia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600..800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="trivia.css" />
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true" focusable="false" width="0" height="0">
+    <symbol id="icon-width" viewBox="0 0 24 24">
+      <rect x="2" y="13" width="7" height="8" rx="1.5" fill="#1c7a8a" />
+      <rect x="10" y="5" width="12" height="16" rx="2" fill="#2d6d9b" />
+      <path d="M13 9h6M13 13h6M13 17h4" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-height" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9.5" fill="#2d6d9b" />
+      <circle cx="8" cy="13" r="3" fill="#fff" />
+      <circle cx="12" cy="11" r="4" fill="#fff" />
+      <circle cx="16.5" cy="13" r="2.8" fill="#fff" />
+      <rect x="6" y="13" width="12" height="3" rx="1.5" fill="#fff" />
+      <path d="m8 8 4-1.8 1.1 2 2.5-.3-3 2-1.2-1.8Z" fill="#f0b429" />
+    </symbol>
+    <symbol id="icon-fast" viewBox="0 0 24 24">
+      <path d="M3 18a9 9 0 0 1 18 0Z" fill="#f6f2e8" stroke="#10232e" stroke-width="1.6" />
+      <path d="M4.5 15a7.5 7.5 0 0 1 3.8-5l1.5 1.7a5.5 5.5 0 0 0-2.7 3.3Z" fill="#2e8064" />
+      <path d="M19.5 15a7.5 7.5 0 0 0-3.8-5l-1.5 1.7a5.5 5.5 0 0 1 2.7 3.3Z" fill="#f0b429" />
+      <path d="m12 18 4-5" fill="none" stroke="#10232e" stroke-width="2" stroke-linecap="round" />
+      <circle cx="12" cy="18" r="1.8" fill="#10232e" />
+    </symbol>
+    <symbol id="icon-slow" viewBox="0 0 24 24">
+      <path d="M3 19h18" fill="none" stroke="#10232e" stroke-width="1.6" stroke-linecap="round" />
+      <path d="M6 16a6 6 0 0 1 12 0Z" fill="#2e8064" />
+      <path d="M6 16h12" fill="none" stroke="#10232e" stroke-width="1.4" />
+      <circle cx="18.5" cy="15" r="1.8" fill="#f0b429" />
+      <path d="M8 16v2.5M16 16v2.5" fill="none" stroke="#10232e" stroke-width="1.6" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-fly" viewBox="0 0 24 24">
+      <path d="M11.5 6C7 7 3.6 10 2 14c3.6-1.3 6.7-1.3 9.5 0Z" fill="#2d6d9b" />
+      <path d="M12.5 6C17 7 20.4 10 22 14c-3.6-1.3-6.7-1.3-9.5 0Z" fill="#1c7a8a" />
+      <path d="M5 15h14" fill="none" stroke="#f0b429" stroke-width="2" stroke-linecap="round" />
+      <path d="M12 4v9" fill="none" stroke="#10232e" stroke-width="1.6" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-sail" viewBox="0 0 24 24">
+      <path d="M11 3v13" fill="none" stroke="#10232e" stroke-width="1.6" stroke-linecap="round" />
+      <path d="M10 4 3.5 14H10Z" fill="#f0b429" />
+      <path d="M12.5 6 19 14h-6.5Z" fill="#2d6d9b" />
+      <path d="M2 17h20l-2.5 4h-15Z" fill="#1c7a8a" />
+    </symbol>
+    <symbol id="icon-road" viewBox="0 0 24 24">
+      <path d="M2 22 7 2h2l-4 20Z" fill="#2d6d9b" />
+      <path d="M15 2h2l5 20h-2Z" fill="#2d6d9b" />
+      <path d="M12 4v3M11.5 10v3M11 16v3" fill="none" stroke="#f0b429" stroke-width="1.8" stroke-linecap="round" />
+      <path d="m14 13 5-5 1.2 1.2-3.4 3.4 1.8.5-2.8 1.7Z" fill="#f6f2e8" stroke="#10232e" stroke-width="1" />
+    </symbol>
+    <symbol id="icon-tracks" viewBox="0 0 24 24">
+      <path d="M6 2 4 22h2l3-20Z" fill="#2e8064" />
+      <path d="M15 2l3 20h2L18 2Z" fill="#2e8064" />
+      <path d="M5 7h14M4.5 12h15M4 17h16" fill="none" stroke="#f0b429" stroke-width="1.8" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-water" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9.5" fill="#1c7a8a" />
+      <path d="M3 11c2-2 4-2 6 0s4 2 6 0 4-2 6 0" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" />
+      <path d="M3 16c2-2 4-2 6 0s4 2 6 0 4-2 6 0" fill="none" stroke="#f0b429" stroke-width="1.8" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-wheels" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="#10232e" />
+      <circle cx="12" cy="12" r="5" fill="#2d6d9b" />
+      <circle cx="12" cy="12" r="2" fill="#f0b429" />
+      <path d="M12 3v4M12 17v4M3 12h4M17 12h4" fill="none" stroke="#f6f2e8" stroke-width="1.6" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-engine" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="#2e8064" />
+      <circle cx="12" cy="12" r="4" fill="#f6f2e8" />
+      <circle cx="12" cy="12" r="1.6" fill="#f0b429" />
+      <path d="M12 3v4M12 17v4M3 12h4M17 12h4" fill="none" stroke="#f6f2e8" stroke-width="1.6" stroke-linecap="round" />
+    </symbol>
+    <symbol id="icon-people" viewBox="0 0 24 24">
+      <circle cx="5.5" cy="8" r="2.6" fill="#f0b429" stroke="#fff" stroke-width="1.2" />
+      <path d="M1.5 19c0-2.7 1.8-4.6 4-4.6s4 1.9 4 4.6Z" fill="#f0b429" stroke="#fff" stroke-width="1.2" />
+      <circle cx="18.5" cy="8" r="2.6" fill="#2e8064" stroke="#fff" stroke-width="1.2" />
+      <path d="M14.5 19c0-2.7 1.8-4.6 4-4.6s4 1.9 4 4.6Z" fill="#2e8064" stroke="#fff" stroke-width="1.2" />
+      <circle cx="12" cy="6.8" r="3.2" fill="#2d6d9b" stroke="#fff" stroke-width="1.2" />
+      <path d="M7 19c0-3.2 2.2-5.6 5-5.6s5 2.4 5 5.6Z" fill="#2d6d9b" stroke="#fff" stroke-width="1.2" />
+    </symbol>
+  </svg>
+
+  <header class="site-head">
+    <div class="wrap">
+      <a class="wordmark" href="trivia.html"><span class="wordmark-dot" aria-hidden="true"></span>Trivia</a>
+      <nav class="head-nav" aria-label="Trivia">
+        <a href="trivia.html#decks">All decks</a>
+        <a href="trivia.html#how">How to play</a>
+        <a href="index.html">Zee Site</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="deck-bar">
+      <a class="back" href="trivia.html">All decks</a>
+      <p class="deck-meta">Transportation deck, 17 vehicles planned</p>
+    </div>
+
+    <header class="deck-head">
+      <h1>Wheels &amp; Wings</h1>
+      <p>Planes, buses, trains and ships. Draw a card, ask up to ten yes-or-no questions, and name the vehicle.</p>
+    </header>
+
+    <div class="stage">
+      <div class="card-stage">
+        <div class="card" id="card" data-mode="air">
+          <div class="card-inner" id="cardInner">
+            <div class="face face--back" id="cardBack">
+              <div class="back-top">
+                <span class="back-wordmark">Trivia</span>
+                <span class="back-deck-label">Transportation deck</span>
+              </div>
+
+              <div class="back-line" aria-hidden="true">
+                <span class="is-air"></span>
+                <span class="is-road"></span>
+                <span class="is-rail"></span>
+                <span class="is-water"></span>
+              </div>
+
+              <div class="back-center">
+                <p class="back-name">Wheels &amp; Wings</p>
+                <ul class="back-modes">
+                  <li class="is-air"><span class="mode-pip" aria-hidden="true"></span>Air</li>
+                  <li class="is-road"><span class="mode-pip" aria-hidden="true"></span>Road</li>
+                  <li class="is-rail"><span class="mode-pip" aria-hidden="true"></span>Rail</li>
+                  <li class="is-water"><span class="mode-pip" aria-hidden="true"></span>Water</li>
+                </ul>
+                <p class="back-note">Ask ten yes-or-no questions, then name the vehicle.</p>
+              </div>
+
+              <p class="back-hint">
+                <span>Tap the card to flip</span>
+                <span id="backCount">1 card</span>
+              </p>
+            </div>
+
+            <article class="face face--front" id="cardFront" aria-hidden="true">
+              <div class="card-hero">
+                <img id="cardPhoto"
+                     src="https://images.unsplash.com/photo-1566827371384-24bf42497a19?auto=format&amp;fit=crop&amp;w=960&amp;q=80"
+                     alt="A white passenger airplane flying through the sky." />
+                <h2 class="card-title" id="cardTitle">Airplane</h2>
+                <div class="buzz-bar">
+                  <span class="buzz-label">Buzz-<br />words</span>
+                  <ul class="buzz" id="cardBuzz" aria-label="Buzz-words">
+                    <li>fast</li>
+                    <li>wings</li>
+                    <li>travel</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="card-lower">
+                <section class="clues" aria-labelledby="cluesCap">
+                  <h3 class="cap" id="cluesCap">Clues</h3>
+                  <ol id="cardClues">
+                    <li>I carry people high above the clouds.</li>
+                    <li>I have wings, but I am not a bird.</li>
+                    <li>You ride in me to visit another country.</li>
+                  </ol>
+                </section>
+
+                <section class="facts-panel" aria-labelledby="factsCap">
+                  <h3 class="cap" id="factsCap">Facts</h3>
+                  <dl class="facts" id="cardFacts">
+                    <div class="fact">
+                      <svg class="fact-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-width"></use></svg>
+                      <dt>Size</dt>
+                      <dd>Very big</dd>
+                    </div>
+                    <div class="fact">
+                      <svg class="fact-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-fast"></use></svg>
+                      <dt>Speed</dt>
+                      <dd>Very fast</dd>
+                    </div>
+                    <div class="fact">
+                      <svg class="fact-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-height"></use></svg>
+                      <dt>Flies</dt>
+                      <dd>High in the sky</dd>
+                    </div>
+                    <div class="fact">
+                      <svg class="fact-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-fly"></use></svg>
+                      <dt>Wings</dt>
+                      <dd>Two big wings</dd>
+                    </div>
+                    <div class="fact">
+                      <svg class="fact-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-people"></use></svg>
+                      <dt>Carries</dt>
+                      <dd>Lots of people</dd>
+                    </div>
+                    <div class="fact">
+                      <svg class="fact-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-road"></use></svg>
+                      <dt>Takes off</dt>
+                      <dd>From a runway</dd>
+                    </div>
+                  </dl>
+                </section>
+              </div>
+
+              <p class="bonus"><span class="bonus-label">Bonus</span> <span id="cardBonus">Name another vehicle that flies.</span></p>
+            </article>
+          </div>
+        </div>
+
+        <div class="card-controls">
+          <button class="btn btn--quiet" id="flipCard" type="button" aria-pressed="false">Flip card</button>
+          <p class="flip-hint" id="flipHint">Tap the card to flip.</p>
+        </div>
+
+        <noscript>
+          <p class="noscript">This card needs JavaScript to flip. The vehicle on the other side is still printed in the page source.</p>
+        </noscript>
+      </div>
+
+      <aside class="panel" aria-label="Game controls">
+        <section class="panel-block">
+          <h2>Questions</h2>
+          <p class="counter-read"><strong id="askedCount">0</strong> of 10 asked</p>
+          <div class="ten" role="group" aria-label="Ten-question counter">
+            <button class="stop-btn" type="button" data-stop aria-label="Mark question 1 asked" aria-pressed="false">1</button>
+            <button class="stop-btn" type="button" data-stop aria-label="Mark question 2 asked" aria-pressed="false">2</button>
+            <button class="stop-btn" type="button" data-stop aria-label="Mark question 3 asked" aria-pressed="false">3</button>
+            <button class="stop-btn" type="button" data-stop aria-label="Mark question 4 asked" aria-pressed="false">4</button>
+            <button class="stop-btn" type="button" data-stop aria-label="Mark question 5 asked" aria-pressed="false">5</button>
+            <button class="stop-btn" type="button" data-stop aria-label="Mark question 6 asked" aria-pressed="false">6</button>
+            <button class="stop-btn" type="button" data-stop aria-label="Mark question 7 asked" aria-pressed="false">7</button>
+            <button class="stop-btn" type="button" data-stop aria-label="Mark question 8 asked" aria-pressed="false">8</button>
+            <button class="stop-btn" type="button" data-stop aria-label="Mark question 9 asked" aria-pressed="false">9</button>
+            <button class="stop-btn" type="button" data-stop aria-label="Mark question 10 asked" aria-pressed="false">10</button>
+          </div>
+          <button class="link-btn" id="resetCounter" type="button">Reset counter</button>
+        </section>
+
+        <section class="panel-block">
+          <button class="btn btn--signal btn--block" id="drawCard" type="button">Draw another card</button>
+          <p class="panel-note">One card is in this deck so far, so drawing again brings back the same vehicle.</p>
+        </section>
+
+        <details class="panel-block">
+          <summary>How to play</summary>
+          <p>One player holds the screen and reads the first two buzz-words. Everyone else asks yes-or-no questions and taps a stop for each one. Use the three clues or six facts if the table gets stuck. Guess the vehicle to keep the card, then try the bonus question. First to seven cards wins.</p>
+        </details>
+      </aside>
+    </div>
+
+    <details class="credits">
+      <summary>Photo credits</summary>
+      <p id="creditLine">Photo: <a href="https://unsplash.com/photos/white-airplane-on-mid-air-8KLLgqHMAv4">White airplane on mid air</a> by John McArthur, licensed <a href="https://unsplash.com/license">Unsplash License</a>, via Unsplash. Cropped and resized for this card.</p>
+    </details>
+
+    <p class="visually-hidden" id="status" role="status" aria-live="polite"></p>
+  </main>
+
+  <footer class="site-foot">
+    <div class="wrap">
+      <p>Trivia is a family guessing game for readers aged 8 and up.</p>
+      <p><a href="trivia.html">All decks</a></p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var CARDS = [
+        {
+          title: "Airplane",
+          mode: "air",
+          modeLabel: "Air",
+          photo: {
+            src: "https://images.unsplash.com/photo-1566827371384-24bf42497a19?auto=format&fit=crop&w=960&q=80",
+            alt: "A white passenger airplane flying through the sky.",
+            creditName: "White airplane on mid air",
+            creditUrl: "https://unsplash.com/photos/white-airplane-on-mid-air-8KLLgqHMAv4",
+            author: "John McArthur",
+            license: "Unsplash License",
+            licenseUrl: "https://unsplash.com/license",
+            source: "Unsplash",
+            creditNote: "Cropped and resized for this card."
+          },
+          buzz: ["fast", "wings", "travel"],
+          facts: [
+            { icon: "icon-width", label: "Size", value: "Very big" },
+            { icon: "icon-fast", label: "Speed", value: "Very fast" },
+            { icon: "icon-height", label: "Flies", value: "High in the sky" },
+            { icon: "icon-fly", label: "Wings", value: "Two big wings" },
+            { icon: "icon-people", label: "Carries", value: "Lots of people" },
+            { icon: "icon-road", label: "Takes off", value: "From a runway" }
+          ],
+          clues: [
+            "I carry people high above the clouds.",
+            "I have wings, but I am not a bird.",
+            "You ride in me to visit another country."
+          ],
+          bonus: "Name another vehicle that flies."
+        }
+      ];
+
+      var cardEl = document.getElementById("card");
+      var frontFace = document.getElementById("cardFront");
+      var backFace = document.getElementById("cardBack");
+      var flipBtn = document.getElementById("flipCard");
+      var flipHint = document.getElementById("flipHint");
+      var drawBtn = document.getElementById("drawCard");
+      var resetBtn = document.getElementById("resetCounter");
+      var askedCount = document.getElementById("askedCount");
+      var backCount = document.getElementById("backCount");
+      var status = document.getElementById("status");
+      var photoEl = document.getElementById("cardPhoto");
+      var titleEl = document.getElementById("cardTitle");
+      var buzzEl = document.getElementById("cardBuzz");
+      var factsEl = document.getElementById("cardFacts");
+      var cluesEl = document.getElementById("cardClues");
+      var bonusEl = document.getElementById("cardBonus");
+      var creditEl = document.getElementById("creditLine");
+      var stopButtons = Array.prototype.slice.call(document.querySelectorAll("[data-stop]"));
+
+      var flipped = false;
+      var asked = 0;
+
+      function shuffle(list) {
+        var out = list.slice();
+        var i;
+        var j;
+        var swap;
+        for (i = out.length - 1; i > 0; i -= 1) {
+          j = Math.floor(Math.random() * (i + 1));
+          swap = out[i];
+          out[i] = out[j];
+          out[j] = swap;
+        }
+        return out;
+      }
+
+      function makeDeck(cards) {
+        var order = [];
+        var cursor = 0;
+        return {
+          next: function () {
+            if (cursor >= order.length) {
+              order = shuffle(cards.map(function (_, index) { return index; }));
+              cursor = 0;
+            }
+            var card = cards[order[cursor]];
+            cursor += 1;
+            return card;
+          },
+          size: cards.length
+        };
+      }
+
+      function announce(message) {
+        status.textContent = message;
+      }
+
+      function setFlipped(next) {
+        flipped = next;
+        cardEl.classList.toggle("is-flipped", flipped);
+        flipBtn.textContent = flipped ? "Flip back" : "Flip card";
+        flipBtn.setAttribute("aria-pressed", flipped ? "true" : "false");
+        flipHint.textContent = flipped ? "Tap the card to flip back." : "Tap the card to flip.";
+        frontFace.setAttribute("aria-hidden", flipped ? "false" : "true");
+        backFace.setAttribute("aria-hidden", flipped ? "true" : "false");
+      }
+
+      function renderCredit(photo) {
+        creditEl.replaceChildren();
+        if (!photo.creditUrl) {
+          creditEl.textContent = photo.creditName;
+          return;
+        }
+        creditEl.append("Photo: ");
+        var creditLink = document.createElement("a");
+        creditLink.href = photo.creditUrl;
+        creditLink.textContent = photo.creditName;
+        creditEl.append(creditLink, " by " + photo.author + ", licensed ");
+        var licenseLink = document.createElement("a");
+        licenseLink.href = photo.licenseUrl;
+        licenseLink.textContent = photo.license;
+        var source = photo.source || "Wikimedia Commons";
+        var note = photo.creditNote || "Resized by Wikimedia's thumbnail service.";
+        creditEl.append(licenseLink, ", via " + source + ". " + note);
+      }
+
+      function renderCard(card) {
+        cardEl.dataset.mode = card.mode;
+        titleEl.textContent = card.title;
+        photoEl.src = card.photo.src;
+        photoEl.alt = card.photo.alt;
+
+        buzzEl.replaceChildren();
+        card.buzz.forEach(function (word) {
+          var li = document.createElement("li");
+          li.textContent = word;
+          buzzEl.append(li);
+        });
+
+        factsEl.replaceChildren();
+        card.facts.forEach(function (fact) {
+          var row = document.createElement("div");
+          row.className = "fact";
+          var icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          icon.setAttribute("class", "fact-icon");
+          icon.setAttribute("viewBox", "0 0 24 24");
+          icon.setAttribute("aria-hidden", "true");
+          var use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+          use.setAttribute("href", "#" + fact.icon);
+          icon.append(use);
+          var term = document.createElement("dt");
+          var value = document.createElement("dd");
+          term.textContent = fact.label;
+          value.textContent = fact.value;
+          row.append(icon, term, value);
+          factsEl.append(row);
+        });
+
+        cluesEl.replaceChildren();
+        card.clues.forEach(function (clue) {
+          var li = document.createElement("li");
+          li.textContent = clue;
+          cluesEl.append(li);
+        });
+
+        bonusEl.textContent = card.bonus;
+        renderCredit(card.photo);
+      }
+
+      function paintCounter() {
+        stopButtons.forEach(function (button, index) {
+          var on = index < asked;
+          button.classList.toggle("is-asked", on);
+          button.setAttribute("aria-pressed", on ? "true" : "false");
+        });
+        askedCount.textContent = String(asked);
+      }
+
+      var deck = makeDeck(CARDS);
+      var current = deck.next();
+
+      renderCard(current);
+      backCount.textContent = deck.size === 1 ? "1 card" : deck.size + " cards";
+      paintCounter();
+      setFlipped(false);
+
+      cardEl.addEventListener("click", function () {
+        setFlipped(!flipped);
+      });
+
+      flipBtn.addEventListener("click", function () {
+        setFlipped(!flipped);
+      });
+
+      drawBtn.addEventListener("click", function () {
+        current = deck.next();
+        renderCard(current);
+        asked = 0;
+        paintCounter();
+        setFlipped(true);
+        announce("Drew " + current.title + ".");
+      });
+
+      stopButtons.forEach(function (button, index) {
+        button.addEventListener("click", function () {
+          asked = asked === index + 1 ? index : index + 1;
+          paintCounter();
+        });
+      });
+
+      resetBtn.addEventListener("click", function () {
+        asked = 0;
+        paintCounter();
+        announce("Counter reset.");
+      });
+    }());
+  </script>
+</body>
+</html>
