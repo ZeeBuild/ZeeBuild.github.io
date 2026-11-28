@@ -645,6 +645,10 @@ a.deck-row:focus-visible .deck-name {
   object-fit: cover;
 }
 
+.card-hero img.is-smaller {
+  transform: scale(0.92);
+}
+
 .card-title {
   position: absolute;
   top: 12px;

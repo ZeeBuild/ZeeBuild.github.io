@@ -333,8 +333,8 @@
           mode: "land",
           modeLabel: "Land",
           photo: {
-            src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Motorcyclist_in_Midtown_Manhattan-L1002704.jpg/960px-Motorcyclist_in_Midtown_Manhattan-L1002704.jpg",
-            alt: "A motorcyclist riding along a city street."
+            src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/BMW_on_a_country_road.jpg/960px-BMW_on_a_country_road.jpg",
+            alt: "A motorcycle on a country road."
           },
           buzz: ["engine", "wheels", "fast"],
           facts: [
@@ -357,8 +357,8 @@
           mode: "air",
           modeLabel: "Air",
           photo: {
-            src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3f/2Hei%C3%9Fluftballons.jpg/960px-2Hei%C3%9Fluftballons.jpg",
-            alt: "Two big hot air balloons floating in the sky."
+            src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Cappadocia_%288274726524%29.jpg/960px-Cappadocia_%288274726524%29.jpg",
+            alt: "A hot air balloon with its basket just before takeoff."
           },
           buzz: ["basket", "float", "sky"],
           facts: [
@@ -543,6 +543,54 @@
             "I stop at stations to pick up people."
           ],
           bonus: "Name another vehicle that runs on tracks."
+        },
+        {
+          title: "Cruise ship",
+          mode: "sea",
+          modeLabel: "Sea",
+          photo: {
+            src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Anthem_of_the_Seas_%28ship%2C_2015%29_at_Liverpool_2021-6.jpg/960px-Anthem_of_the_Seas_%28ship%2C_2015%29_at_Liverpool_2021-6.jpg",
+            alt: "A large cruise ship seen from the side."
+          },
+          buzz: ["holiday", "big", "sea"],
+          facts: [
+            { icon: "icon-width", label: "Size", value: "Very big" },
+            { icon: "icon-people", label: "Carries", value: "Lots of people" },
+            { icon: "icon-water", label: "Travels", value: "On water" },
+            { icon: "icon-engine", label: "Power", value: "An engine" },
+            { icon: "icon-slow", label: "Speed", value: "Not fast" },
+            { icon: "icon-height", label: "Has", value: "Many decks" }
+          ],
+          clues: [
+            "I am a giant ship for holidays.",
+            "People sleep and eat inside me.",
+            "I sail across the sea to new places."
+          ],
+          bonus: "Name another big water vehicle."
+        },
+        {
+          title: "Cargo ship",
+          mode: "sea",
+          modeLabel: "Sea",
+          photo: {
+            src: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/06/Cargo_Ship_Puerto_Cortes.jpg/960px-Cargo_Ship_Puerto_Cortes.jpg",
+            alt: "A large cargo ship on the water."
+          },
+          buzz: ["boxes", "heavy", "sea"],
+          facts: [
+            { icon: "icon-width", label: "Size", value: "Very big" },
+            { icon: "icon-people", label: "Carries", value: "Goods" },
+            { icon: "icon-water", label: "Travels", value: "On water" },
+            { icon: "icon-engine", label: "Power", value: "An engine" },
+            { icon: "icon-slow", label: "Speed", value: "Slow" },
+            { icon: "icon-height", label: "Piled", value: "High up" }
+          ],
+          clues: [
+            "I carry boxes across the sea.",
+            "I am very big and very heavy.",
+            "I move slowly with a big load."
+          ],
+          bonus: "Name another ship that carries things."
         }
       ];
 
@@ -610,6 +658,8 @@
         titleEl.textContent = card.title;
         photoEl.src = card.photo.src;
         photoEl.alt = card.photo.alt;
+        photoEl.classList.toggle("is-smaller", !!card.photo.smaller);
+        photoEl.parentElement.style.background = card.photo.background || "";
 
         buzzEl.replaceChildren();
         card.buzz.forEach(function (word) {
